@@ -157,7 +157,7 @@ public class UserResource {
     @GET
     @Path("{login}")
     @Produces("application/json,application/xml")
-    public User getUser(@PathParam("login") String login) {
+    public User getUserXML(@PathParam("login") String login) {
         // Si l'utilisateur est inconnu, on renvoie 404
         if (  ! users.containsKey(login) ) {
             throw new NotFoundException();
