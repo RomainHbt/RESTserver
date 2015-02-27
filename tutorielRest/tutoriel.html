@@ -1,0 +1,1726 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+<title>Développement REST avec Jersey</title>
+<!-- 2015-02-24 mar. 10:04 -->
+<meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta  name="generator" content="Org-mode" />
+<meta  name="author" content="Yvan Peter" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  pre.src-sh:before    { content: 'sh'; }
+  pre.src-bash:before  { content: 'sh'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-R:before     { content: 'R'; }
+  pre.src-perl:before  { content: 'Perl'; }
+  pre.src-java:before  { content: 'Java'; }
+  pre.src-sql:before   { content: 'SQL'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.right  { text-align: center;  }
+  th.left   { text-align: center;   }
+  th.center { text-align: center; }
+  td.right  { text-align: right;  }
+  td.left   { text-align: left;   }
+  td.center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara:nth-child(2) { display: inline; }
+  .footpara { display: block; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Développement REST avec Jersey</h1>
+<div id="table-of-contents">
+<h2>Table des matières</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1. Mise en place de l'environnement</a>
+<ul>
+<li><a href="#sec-1-1">1.1. Création du projet à l'aide de Maven</a></li>
+<li><a href="#sec-1-2">1.2. Ajouter un environnement de test</a></li>
+<li><a href="#sec-1-3">1.3. Mise en place de l'environnement de test unitaire (JUnit)</a></li>
+</ul>
+</li>
+<li><a href="#sec-2">2. Création d'une ressource <code>User</code></a>
+<ul>
+<li><a href="#sec-2-1">2.1. Définition de l'API de la ressource <code>User</code></a></li>
+<li><a href="#sec-2-2">2.2. Première étape : la création des utilisateurs</a></li>
+<li><a href="#sec-2-3">2.3. Deuxième étape : les méthodes GET, PUT et DELETE</a>
+<ul>
+<li><a href="#sec-2-3-1">2.3.1. La méthode GET</a></li>
+<li><a href="#sec-2-3-2">2.3.2. La méthode DELETE</a></li>
+<li><a href="#sec-2-3-3">2.3.3. La méthode PUT</a></li>
+<li><a href="#sec-2-3-4">2.3.4. Les méthodes HEAD et OPTIONS</a></li>
+</ul>
+</li>
+<li><a href="#sec-2-4">2.4. Jouons avec les types MIME</a>
+<ul>
+<li><a href="#sec-2-4-1">2.4.1. Le type application/x-www-form-urlencoded</a></li>
+<li><a href="#sec-2-4-2">2.4.2. Et XML alors ?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1"><span class="section-number-2">1</span> Mise en place de l'environnement</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+Ce tutoriel utilise Maven si votre machine se trouve derrière un proxy, vous devrez mettre la configuration suivante dans le fichier <code>~/.m2/settings.xml</code> (à adapter à votre environnement) :
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-xml">&lt;<span style="color: #0000ff;">settings</span>&gt;
+  [...]
+  &lt;<span style="color: #0000ff;">proxies</span>&gt;
+   &lt;<span style="color: #0000ff;">proxy</span>&gt;
+      &lt;<span style="color: #0000ff;">id</span>&gt;lille1-proxy&lt;/<span style="color: #0000ff;">id</span>&gt;
+      &lt;<span style="color: #0000ff;">active</span>&gt;true&lt;/<span style="color: #0000ff;">active</span>&gt;
+      &lt;<span style="color: #0000ff;">protocol</span>&gt;http&lt;/<span style="color: #0000ff;">protocol</span>&gt;
+      &lt;<span style="color: #0000ff;">host</span>&gt;cache.univ-lille1.fr&lt;/<span style="color: #0000ff;">host</span>&gt;
+      &lt;<span style="color: #0000ff;">port</span>&gt;3128&lt;/<span style="color: #0000ff;">port</span>&gt;
+    &lt;/<span style="color: #0000ff;">proxy</span>&gt;
+  &lt;/<span style="color: #0000ff;">proxies</span>&gt;
+  [...]
+&lt;/<span style="color: #0000ff;">settings</span>&gt;
+</pre>
+</div>
+</div>
+
+<div id="outline-container-sec-1-1" class="outline-3">
+<h3 id="sec-1-1"><span class="section-number-3">1.1</span> Création du projet à l'aide de Maven</h3>
+<div class="outline-text-3" id="text-1-1">
+<p>
+La création du projet est réalisée sur la base de l'archétype <code>jersey-quickstart-webapp</code>. Celui-ci génère une arborescence ainsi que des classes exemples pour la partie client Web et pour la partie ressources REST. Vous pouvez adapter les éléments suivants à vos besoins :
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="left" />
+
+<col  class="left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="left"><b>groupId</b></td>
+<td class="left">Définit un identifiant unique pour le projet qui permettra de le déclarer dans les dépendances d'autres projets.</td>
+</tr>
+
+<tr>
+<td class="left">&#xa0;</td>
+<td class="left">Par convention, utilise une notation de paquetage Java pour garantir l'unicité</td>
+</tr>
+
+<tr>
+<td class="left"><b>artifactId</b></td>
+<td class="left">Donnera le nom de l'archive de déploiement (jar, war) ainsi que le nom du répertoire utilisé pour les fichiers générés</td>
+</tr>
+
+<tr>
+<td class="left"><b>package</b></td>
+<td class="left">Paquetage utilisé pour vos sources</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+La commande à utiliser pour générer votre projet est la suivante :
+</p>
+
+<pre class="example">
+mvn archetype:generate -DarchetypeArtifactId=jersey-quickstart-webapp -DarchetypeGroupId=org.glassfish.jersey.archetypes -DinteractiveMode=false -DgroupId=fr.univ_lille.iut -DartifactId=first-rest-app -Dpackage=fr.univ_lille.iut
+</pre>
+
+<pre class="example">
+petery@neuvilloise:~/Sandbox/REST$ mvn archetype:generate -DarchetypeArtifactId=jersey-quickstart-webapp -DarchetypeGroupId=org.glassfish.jersey.archetypes -DinteractiveMode=false -DgroupId=fr.univ_lille.iut -DartifactId=first-rest-app -Dpackage=fr.univ_lille.iut
+[INFO] Scanning for projects...
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Maven Stub Project (No POM) 1
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] &gt;&gt;&gt; maven-archetype-plugin:2.2:generate (default-cli) @ standalone-pom &gt;&gt;&gt;
+[INFO] 
+[INFO] &lt;&lt;&lt; maven-archetype-plugin:2.2:generate (default-cli) @ standalone-pom &lt;&lt;&lt;
+[INFO] 
+[INFO] --- maven-archetype-plugin:2.2:generate (default-cli) @ standalone-pom ---
+[INFO] Generating project in Batch mode
+[INFO] Archetype [org.glassfish.jersey.archetypes:jersey-quickstart-webapp:2.16] found in catalog remote
+[INFO] ----------------------------------------------------------------------------
+[INFO] Using following parameters for creating project from Old (1.x) Archetype: jersey-quickstart-webapp:2.16
+[INFO] ----------------------------------------------------------------------------
+[INFO] Parameter: groupId, Value: fr.univ_lille.iut
+[INFO] Parameter: packageName, Value: fr.univ_lille.iut
+[INFO] Parameter: package, Value: fr.univ_lille.iut
+[INFO] Parameter: artifactId, Value: first-rest-app
+[INFO] Parameter: basedir, Value: /home/petery/Sandbox/REST
+[INFO] Parameter: version, Value: 1.0-SNAPSHOT
+[INFO] project created from Old (1.x) Archetype in dir: /home/petery/Sandbox/REST/first-rest-app
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 12.130s
+[INFO] Finished at: Mon Feb 23 14:28:23 CET 2015
+[INFO] Final Memory: 14M/240M
+[INFO] ------------------------------------------------------------------------
+</pre>
+
+<p>
+Après avoir téléchargé les dépendances nécessaires, vous devriez avoir dans le répertoire <code>first-rest-app</code> l'arborescence suivante :
+</p>
+
+<pre class="example">
+first-rest-app/
+├── pom.xml
+└── src
+    └── main
+        ├── java
+        │   └── fr
+        │       └── univ_lille
+        │           └── iut
+        │               └── MyResource.java
+        ├── resources
+        └── webapp
+            ├── index.jsp
+            └── WEB-INF
+                └── web.xml
+</pre>
+
+<p>
+Si vous utiliser <code>git</code> c'est le moment de faire un <code>git init</code> et de créer votre fichier <code>.gitignore</code>
+</p>
+
+<pre class="example">
+*~
+.project
+.classpath
+.settings
+target/
+</pre>
+
+<p>
+puis de faire <code>git add --all</code>
+</p>
+
+
+<p>
+A ce stade, on a un squelette de développement comprenant une page JSP ainsi qu'une ressource. On peut à partir de là générer une archive war qui pourra être déployée dans un container de Servlets :
+</p>
+<pre class="example">
+petery@neuvilloise:~/Sandbox/REST/first-rest-app$ mvn package
+[INFO] Scanning for projects...
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building first-rest-app 1.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-resources-plugin:2.3:resources (default-resources) @ first-rest-app ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 0 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:2.5.1:compile (default-compile) @ first-rest-app ---
+[INFO] Compiling 1 source file to /home/petery/Sandbox/REST/first-rest-app/target/classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.3:testResources (default-testResources) @ first-rest-app ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /home/petery/Sandbox/REST/first-rest-app/src/test/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:2.5.1:testCompile (default-testCompile) @ first-rest-app ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.10:test (default-test) @ first-rest-app ---
+[INFO] No tests to run.
+[INFO] Surefire report directory: /home/petery/Sandbox/REST/first-rest-app/target/surefire-reports
+
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+
+Results :
+
+Tests run: 0, Failures: 0, Errors: 0, Skipped: 0
+
+[INFO] 
+[INFO] --- maven-war-plugin:2.1.1:war (default-war) @ first-rest-app ---
+[INFO] Packaging webapp
+[INFO] Assembling webapp [first-rest-app] in [/home/petery/Sandbox/REST/first-rest-app/target/first-rest-app]
+[INFO] Processing war project
+[INFO] Copying webapp resources [/home/petery/Sandbox/REST/first-rest-app/src/main/webapp]
+[INFO] Webapp assembled in [243 msecs]
+[INFO] Building war: /home/petery/Sandbox/REST/first-rest-app/target/first-rest-app.war
+[INFO] WEB-INF/web.xml already added, skipping
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 4.156s
+[INFO] Finished at: Mon Feb 23 14:30:05 CET 2015
+[INFO] Final Memory: 13M/232M
+[INFO] ------------------------------------------------------------------------
+</pre>
+</div>
+</div>
+
+<div id="outline-container-sec-1-2" class="outline-3">
+<h3 id="sec-1-2"><span class="section-number-3">1.2</span> Ajouter un environnement de test</h3>
+<div class="outline-text-3" id="text-1-2">
+<p>
+Afin de pouvoir tester votre développement au fur et à mesure sans devoir installer un container extérieur, nous allons utiliser un plugin Jetty. Pour cela modifiez votre <code>pom.xml</code> avec le code suivant :
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-xml">&lt;<span style="color: #0000ff;">project...</span>
+[...]
+&lt;<span style="color: #0000ff;">build</span>&gt;
+  [...]
+  &lt;<span style="color: #0000ff;">plugins</span>&gt;
+    [...]
+            &lt;<span style="color: #0000ff;">plugin</span>&gt;
+              &lt;<span style="color: #0000ff;">groupId</span>&gt;org.eclipse.jetty&lt;/<span style="color: #0000ff;">groupId</span>&gt;
+              &lt;<span style="color: #0000ff;">artifactId</span>&gt;jetty-maven-plugin&lt;/<span style="color: #0000ff;">artifactId</span>&gt;
+              &lt;<span style="color: #0000ff;">version</span>&gt;9.3.0.M1&lt;/<span style="color: #0000ff;">version</span>&gt;
+              &lt;<span style="color: #0000ff;">configuration</span>&gt;
+                &lt;<span style="color: #0000ff;">scanIntervalSeconds</span>&gt;10&lt;/<span style="color: #0000ff;">scanIntervalSeconds</span>&gt;
+              &lt;/<span style="color: #0000ff;">configuration</span>&gt;
+            &lt;/<span style="color: #0000ff;">plugin</span>&gt;
+        &lt;/<span style="color: #0000ff;">plugins</span>&gt;
+[..]
+</pre>
+</div>
+
+<p>
+Vous pouvez maintenant lancer votre container avec la commande <code>mvn jetty:run</code>
+</p>
+
+<pre class="example">
+petery@neuvilloise:~/Sandbox/REST/first-rest-app$ mvn jetty:run
+[INFO] Scanning for projects...
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building first-rest-app 1.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] &gt;&gt;&gt; jetty-maven-plugin:9.3.0.M1:run (default-cli) @ first-rest-app &gt;&gt;&gt;
+[INFO] 
+[INFO] --- maven-resources-plugin:2.3:resources (default-resources) @ first-rest-app ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 0 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:2.5.1:compile (default-compile) @ first-rest-app ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- maven-resources-plugin:2.3:testResources (default-testResources) @ first-rest-app ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /home/petery/Sandbox/REST/first-rest-app/src/test/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:2.5.1:testCompile (default-testCompile) @ first-rest-app ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] &lt;&lt;&lt; jetty-maven-plugin:9.3.0.M1:run (default-cli) @ first-rest-app &lt;&lt;&lt;
+[INFO] 
+[INFO] --- jetty-maven-plugin:9.3.0.M1:run (default-cli) @ first-rest-app ---
+[INFO] Configuring Jetty for project: first-rest-app
+[INFO] webAppSourceDirectory not set. Trying src/main/webapp
+[INFO] Reload Mechanic: automatic
+[INFO] Classes = /home/petery/Sandbox/REST/first-rest-app/target/classes
+2015-02-23 14:32:19.313:INFO::main: Logging initialized @2883ms
+[INFO] Context path = /
+[INFO] Tmp directory = /home/petery/Sandbox/REST/first-rest-app/target/tmp
+[INFO] Web defaults = org/eclipse/jetty/webapp/webdefault.xml
+[INFO] Web overrides =  none
+[INFO] web.xml file = file:///home/petery/Sandbox/REST/first-rest-app/src/main/webapp/WEB-INF/web.xml
+[INFO] Webapp directory = /home/petery/Sandbox/REST/first-rest-app/src/main/webapp
+2015-02-23 14:32:19.416:INFO:oejs.Server:main: jetty-9.3.0.M1
+2015-02-23 14:32:20.873:INFO:oejsh.ContextHandler:main: Started o.e.j.m.p.JettyWebAppContext@5da03325{/,file:///home/petery/Sandbox/REST/first-rest-app/src/main/webapp/,AVAILABLE}{file:///home/petery/Sandbox/REST/first-rest-app/src/main/webapp/}
+2015-02-23 14:32:20.886:INFO:oejs.ServerConnector:main: Started ServerConnector@30e556bc{HTTP/1.1,[http/1.1]}{0.0.0.0:8080}
+2015-02-23 14:32:20.887:INFO:oejs.Server:main: Started @4457ms
+[INFO] Started Jetty Server
+[INFO] Starting scanner at interval of 10 seconds.
+</pre>
+
+<p>
+Vous pouvez maintenant tester l'application générée. Cette application web sera disponible avec l'URL suivante : 
+<a href="http:localhost:8080">http:localhost:8080</a>.
+</p>
+
+
+<div class="figure">
+<p><img src="./Jersey_webapp_initiale.png" alt="Jersey_webapp_initiale.png" />
+</p>
+<p><span class="figure-number">Figure&nbsp;1&nbsp;:</span> Version initiale de l'application Web générée</p>
+</div>
+
+<p>
+Celle-ci comprend une unique ressource (accessible via le lien sur la page) qui répond à une requête GET avec l'URL 
+suivante : <a href="http:localhost:8080/webapi/myresource">http:localhost:8080/webapi/myresource</a>.
+</p>
+
+
+<div class="figure">
+<p><img src="./Jersey_ressource_initiale.png" alt="Jersey_ressource_initiale.png" />
+</p>
+<p><span class="figure-number">Figure&nbsp;2&nbsp;:</span> Résultat d'une requête GET sur la ressource générée</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-1-3" class="outline-3">
+<h3 id="sec-1-3"><span class="section-number-3">1.3</span> Mise en place de l'environnement de test unitaire (JUnit)</h3>
+<div class="outline-text-3" id="text-1-3">
+<p>
+Tout d'abord, nous allons modifier le fichier <code>pom.xml</code> de manière à déclarer la dépendance pour les tests :
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-xml">[...]
+  &lt;<span style="color: #0000ff;">dependencies</span>&gt;
+  [...]
+      &lt;<span style="color: #0000ff;">dependency</span>&gt;
+        &lt;<span style="color: #0000ff;">groupId</span>&gt;org.glassfish.jersey.test-framework.providers&lt;/<span style="color: #0000ff;">groupId</span>&gt;
+        &lt;<span style="color: #0000ff;">artifactId</span>&gt;jersey-test-framework-provider-jetty&lt;/<span style="color: #0000ff;">artifactId</span>&gt;
+        &lt;<span style="color: #0000ff;">version</span>&gt;2.16&lt;/<span style="color: #0000ff;">version</span>&gt;
+      &lt;/<span style="color: #0000ff;">dependency</span>&gt;
+  &lt;/<span style="color: #0000ff;">dependencies</span>&gt;
+[...]
+</pre>
+</div>
+
+<p>
+Nous allons ensuite créer l'arborescence de test standard (<code>mkdir -p src/test/java/fr/univ_lille/iut</code>) ainsi qu'une classe de test pour notre ressource générée.
+Nous obtenons l'arborescence suivante :
+</p>
+
+<pre class="example">
+first-rest-app/
+├── pom.xml
+└── src
+    ├── main
+    │   ├── java
+    │   │   └── fr
+    │   │       └── univ_lille
+    │   │           └── iut
+    │   │               └── MyResource.java
+    │   ├── resources
+    │   └── webapp
+    │       ├── index.jsp
+    │       └── WEB-INF
+    │           └── web.xml
+    └── test
+        └── java
+            └── fr
+                └── univ_lille
+                    └── iut
+                        └── MyResourceTest.java
+</pre>
+
+<p>
+La classe de test s'écrit de la façon suivante :
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span class="linenr"> 1: </span><span style="color: #a020f0;">package</span> fr.univ_lille.<span style="color: #008b8b;">iut</span>;
+<span class="linenr"> 2: </span>
+<span class="linenr"> 3: </span><span style="color: #a020f0;">import</span> <span style="color: #008b8b;">javax</span>.<span style="color: #008b8b;">ws</span>.<span style="color: #008b8b;">rs</span>.<span style="color: #008b8b;">core</span>.<span style="color: #228b22;">Application</span>;
+<span class="linenr"> 4: </span>
+<span class="linenr"> 5: </span><span style="color: #a020f0;">import</span> <span style="color: #008b8b;">org</span>.<span style="color: #008b8b;">glassfish</span>.<span style="color: #008b8b;">jersey</span>.<span style="color: #008b8b;">server</span>.<span style="color: #228b22;">ResourceConfig</span>;
+<span class="linenr"> 6: </span><span style="color: #a020f0;">import</span> <span style="color: #008b8b;">org</span>.<span style="color: #008b8b;">glassfish</span>.<span style="color: #008b8b;">jersey</span>.<span style="color: #008b8b;">test</span>.<span style="color: #228b22;">JerseyTest</span>;
+<span class="linenr"> 7: </span>
+<span class="linenr"> 8: </span><span style="color: #a020f0;">import</span> <span style="color: #008b8b;">org</span>.<span style="color: #008b8b;">junit</span>.<span style="color: #228b22;">Test</span>;
+<span class="linenr"> 9: </span><span style="color: #a020f0;">import</span> <span style="color: #a020f0;">static</span> <span style="color: #008b8b;">org</span>.<span style="color: #008b8b;">junit</span>.Assert.<span style="color: #228b22;">assertEquals</span>;
+<span class="linenr">10: </span>
+<span class="linenr">11: </span><span style="color: #a020f0;">public</span> <span style="color: #a020f0;">class</span> <span style="color: #228b22;">MyResourceTest</span> <span style="color: #a020f0;">extends</span> <span style="color: #228b22;">JerseyTest</span> {
+<span class="linenr">12: </span>
+<span class="linenr">13: </span>    @Override 
+<span id="coderef-override" class="coderef-off"><span class="linenr">14: </span>    <span style="color: #a020f0;">protected</span> Application configure() {</span>
+<span id="coderef-config" class="coderef-off"><span class="linenr">15: </span>        <span style="color: #a020f0;">return</span> <span style="color: #a020f0;">new</span> <span style="color: #228b22;">ResourceConfig</span>(MyResource.<span style="color: #a020f0;">class</span>);</span>
+<span class="linenr">16: </span>
+<span class="linenr">17: </span>    }
+<span class="linenr">18: </span>
+<span class="linenr">19: </span>    <span style="color: #8b2252;">/**</span>
+<span class="linenr">20: </span><span style="color: #8b2252;">     * Test to see that the message "Got it!" is sent in the response.</span>
+<span class="linenr">21: </span><span style="color: #8b2252;">     */</span>
+<span class="linenr">22: </span>    @Test
+<span class="linenr">23: </span>    <span style="color: #a020f0;">public</span> <span style="color: #228b22;">void</span> testGetIt() {
+<span id="coderef-invocation" class="coderef-off"><span class="linenr">24: </span>        <span style="color: #228b22;">String</span> <span style="color: #a0522d;">responseMsg</span> = target(<span style="color: #8b2252;">"/myresource"</span>).request().get(String.<span style="color: #a020f0;">class</span>);</span>
+<span class="linenr">25: </span>        assertEquals(<span style="color: #8b2252;">"Got it!"</span>, responseMsg);
+<span class="linenr">26: </span>    }
+<span class="linenr">27: </span>}
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="./warning-17.png" alt="warning-17.png" align="left" width="100px" hspace="50px" />
+</p>
+</div>
+
+<ul class="org-ul">
+<li>toutes les classes issue de paquetages javax.ws.rs.* sont des classes du standard JAX-RS et correpondent donc à du code portable vers un autre cadre de développement (par exemple RESTeasy);
+</li>
+<li>ici, j'ai choisi d'utiliser la classe <a href="https:jersey.java.net/apidocs/2.16/jersey/org/glassfish/jersey/test/JerseyTest.html"><code>JerseyTest</code></a> pour me faciliter la vie, le code des test n'est donc pas portable;
+<ul class="org-ul">
+<li>quand on utilise JerseyTest on <b>DOIT</b> redéfinir la méthode  <a href="#coderef-override"class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-override');" onmouseout="CodeHighlightOff(this, 'coderef-override');"><code>configure()</code></a> qui permet de configurer le contexte d'exécution;
+</li>
+<li>la classe <a href="#coderef-config"class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-config');" onmouseout="CodeHighlightOff(this, 'coderef-config');"><code>ResourceConfig</code></a> permet de spécifier les ressources qui seront disponibles dans l'environnement.
+</li>
+</ul>
+</li>
+<li>la méthode de test écrite ici fait une requête HTTP GET sur la resource. Pour cette <a href="#coderef-invocation"class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-invocation');" onmouseout="CodeHighlightOff(this, 'coderef-invocation');">invocation</a>, Elle utilise une classe <a href="https:jersey.java.net/apidocs/2.16/jersey/javax/ws/rs/client/WebTarget.html">WebTarget</a> obtenue grâce à la méthode <code>target()</code> de la classe <code>JerseyTest.</code>
+</li>
+</ul>
+
+<p>
+Pour lancer les tests faire <code>mvn test</code>
+</p>
+
+<pre class="example">
+petery@neuvilloise:~/Sandbox/REST/first-rest-app$ mvn test
+[INFO] Scanning for projects...
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building first-rest-app 1.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-resources-plugin:2.3:resources (default-resources) @ first-rest-app ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 0 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:2.5.1:compile (default-compile) @ first-rest-app ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- maven-resources-plugin:2.3:testResources (default-testResources) @ first-rest-app ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /home/petery/Sandbox/REST/first-rest-app/src/test/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:2.5.1:testCompile (default-testCompile) @ first-rest-app ---
+[INFO] Compiling 1 source file to /home/petery/Sandbox/REST/first-rest-app/target/test-classes
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.10:test (default-test) @ first-rest-app ---
+[INFO] Surefire report directory: /home/petery/Sandbox/REST/first-rest-app/target/surefire-reports
+
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+Running fr.univ_lille.iut.MyResourceTest
+févr. 23, 2015 2:42:42 PM org.glassfish.jersey.test.jetty.JettyTestContainerFactory$JettyTestContainer &lt;init&gt;
+INFOS: Creating JettyTestContainer configured at the base URI http://localhost:9998/
+2015-02-23 14:42:43.078:INFO:oejs.Server:main: jetty-9.1.1.v20140108
+2015-02-23 14:42:43.128:INFO:oejs.ServerConnector:main: Started ServerConnector@79885c3a{HTTP/1.1}{0.0.0.0:9998}
+2015-02-23 14:42:43.326:INFO:oejs.ServerConnector:main: Stopped ServerConnector@79885c3a{HTTP/1.1}{0.0.0.0:9998}
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.985 sec
+
+Results :
+
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 2.904s
+[INFO] Finished at: Mon Feb 23 14:42:43 CET 2015
+[INFO] Final Memory: 13M/303M
+[INFO] ------------------------------------------------------------------------
+</pre>
+
+<p>
+Nous avons maintenant un environnement de développement correct pour développer nos services REST ainsi que la partie client Web qui peut lui être associée.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-2" class="outline-2">
+<h2 id="sec-2"><span class="section-number-2">2</span> Création d'une ressource <code>User</code></h2>
+<div class="outline-text-2" id="text-2">
+<p>
+Sur cette base nous allons pouvoir développer un simple service REST de gestion d'utilisateurs. Vous pouvez maintenant effacer les fichiers correspondant à la ressource générée en exemple (<code>MyResource.java</code> et <code>MyResourceTest.java</code>).
+</p>
+</div>
+
+<div id="outline-container-sec-2-1" class="outline-3">
+<h3 id="sec-2-1"><span class="section-number-3">2.1</span> Définition de l'API de la ressource <code>User</code></h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+Nous pouvons tout d'abord réfléchir à API REST que nous allons offrir pour la ressource <code>User</code>. Celle-ci devrait répondre aux URI suivantes :
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="left">Opération</th>
+<th scope="col" class="left">URI</th>
+<th scope="col" class="left">Action réalisée</th>
+<th scope="col" class="left">Retour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="left">GET</td>
+<td class="left">/users</td>
+<td class="left">récupère l'ensemble des utilisateurs</td>
+<td class="left">200 et un tableau d'utilisateurs</td>
+</tr>
+</tbody>
+<tbody>
+<tr>
+<td class="left">GET</td>
+<td class="left">/users/{id}</td>
+<td class="left">récupère l'utilisateur d'identifiant id</td>
+<td class="left">200 et l'utilisateur</td>
+</tr>
+
+<tr>
+<td class="left">&#xa0;</td>
+<td class="left">&#xa0;</td>
+<td class="left">&#xa0;</td>
+<td class="left">404 si id est inconnu</td>
+</tr>
+</tbody>
+<tbody>
+<tr>
+<td class="left">POST</td>
+<td class="left">/users</td>
+<td class="left">création d'un utilisateur</td>
+<td class="left">201 et l'URI de la ressource créée</td>
+</tr>
+
+<tr>
+<td class="left">&#xa0;</td>
+<td class="left">&#xa0;</td>
+<td class="left">&#xa0;</td>
+<td class="left">400 si les informations ne sont pas correctes</td>
+</tr>
+
+<tr>
+<td class="left">&#xa0;</td>
+<td class="left">&#xa0;</td>
+<td class="left">&#xa0;</td>
+<td class="left">409 si l'utilisateur existe déjà</td>
+</tr>
+</tbody>
+<tbody>
+<tr>
+<td class="left">PUT</td>
+<td class="left">/users/{id}</td>
+<td class="left">modification d'un utilisateur</td>
+<td class="left">200 et l'utilisateur modifié</td>
+</tr>
+
+<tr>
+<td class="left">&#xa0;</td>
+<td class="left">&#xa0;</td>
+<td class="left">&#xa0;</td>
+<td class="left">404 si id est inconnu</td>
+</tr>
+
+<tr>
+<td class="left">&#xa0;</td>
+<td class="left">&#xa0;</td>
+<td class="left">&#xa0;</td>
+<td class="left">400 si les informations ne sont pas correctes</td>
+</tr>
+</tbody>
+<tbody>
+<tr>
+<td class="left">DELETE</td>
+<td class="left">/users/{id}</td>
+<td class="left">destruction de l'utilisateur d'identifiant id</td>
+<td class="left">204 si l'opération à réussi</td>
+</tr>
+
+<tr>
+<td class="left">&#xa0;</td>
+<td class="left">&#xa0;</td>
+<td class="left">&#xa0;</td>
+<td class="left">404 si id est inconnu</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div id="outline-container-sec-2-2" class="outline-3">
+<h3 id="sec-2-2"><span class="section-number-3">2.2</span> Première étape : la création des utilisateurs</h3>
+<div class="outline-text-3" id="text-2-2">
+<p>
+Dans un premier temps, nous allons créer une classe <code>User</code> qui représentera un utilisateur. Cette classe doit respecter les conventions de JavaBean (contructeur vide, méthodes getter et setter pour les attributs&#x2026;). Cela nous permettra de bénéficier de la prise en charge automatique par Jersey de la transmission de ce type d'objet dans les requêtes et les réponses.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span class="linenr"> 1: </span><span style="color: #a020f0;">package</span> fr.univ_lille.<span style="color: #008b8b;">iut</span>;
+<span class="linenr"> 2: </span>
+<span class="linenr"> 3: </span><span style="color: #a020f0;">public</span> <span style="color: #a020f0;">class</span> <span style="color: #228b22;">User</span> {
+<span class="linenr"> 4: </span>    <span style="color: #a020f0;">private</span> <span style="color: #228b22;">String</span> <span style="color: #a0522d;">login</span>;
+<span class="linenr"> 5: </span>    <span style="color: #a020f0;">private</span> <span style="color: #228b22;">String</span> <span style="color: #a0522d;">name</span>;
+<span class="linenr"> 6: </span>    <span style="color: #a020f0;">private</span> <span style="color: #228b22;">String</span> <span style="color: #a0522d;">mail</span>;
+<span class="linenr"> 7: </span>
+<span class="linenr"> 8: </span>    <span style="color: #a020f0;">public</span> User(<span style="color: #228b22;">String</span> <span style="color: #a0522d;">login</span>, <span style="color: #228b22;">String</span> <span style="color: #a0522d;">name</span>, <span style="color: #228b22;">String</span> <span style="color: #a0522d;">mail</span>) {
+<span class="linenr"> 9: </span>        <span style="color: #a020f0;">this</span>.login = login;
+<span class="linenr">10: </span>        <span style="color: #a020f0;">this</span>.name = name;
+<span class="linenr">11: </span>        <span style="color: #a020f0;">this</span>.mail = mail;
+<span class="linenr">12: </span>    }
+<span class="linenr">13: </span>
+<span class="linenr">14: </span>    <span style="color: #a020f0;">public</span> User() {}
+<span class="linenr">15: </span>
+<span class="linenr">16: </span>    <span style="color: #a020f0;">public</span> <span style="color: #228b22;">String</span> <span style="color: #0000ff;">getLogin</span>() {
+<span class="linenr">17: </span>        <span style="color: #a020f0;">return</span> login;
+<span class="linenr">18: </span>    }
+<span class="linenr">19: </span>
+<span class="linenr">20: </span>    <span style="color: #a020f0;">public</span> <span style="color: #228b22;">void</span> <span style="color: #0000ff;">setLogin</span>(<span style="color: #228b22;">String</span> <span style="color: #a0522d;">login</span>) {
+<span class="linenr">21: </span>        <span style="color: #a020f0;">this</span>.login = login;
+<span class="linenr">22: </span>    }
+<span class="linenr">23: </span>
+<span class="linenr">24: </span>    [...]
+<span class="linenr">25: </span>
+<span class="linenr">26: </span>    <span style="color: #a020f0;">public</span> <span style="color: #228b22;">boolean</span> equals(<span style="color: #228b22;">Object</span> <span style="color: #a0522d;">u</span>) {
+<span class="linenr">27: </span>        <span style="color: #a020f0;">return</span> login.equals(((<span style="color: #228b22;">User</span>) u).login) || name.equals(((<span style="color: #228b22;">User</span>) u).name) || mail.equals(((<span style="color: #228b22;">User</span>) u).mail);
+<span class="linenr">28: </span>    }
+<span class="linenr">29: </span>
+<span class="linenr">30: </span>    <span style="color: #a020f0;">public</span> <span style="color: #228b22;">String</span> <span style="color: #0000ff;">toString</span>() {
+<span class="linenr">31: </span>        <span style="color: #a020f0;">return</span> login + <span style="color: #8b2252;">" "</span> + name + <span style="color: #8b2252;">" "</span> + mail;
+<span class="linenr">32: </span>    }
+<span class="linenr">33: </span>}
+</pre>
+</div>
+
+<p>
+Puis afin de développer notre ressource&#x2026; nous allons commencer par écrire un premier test!
+</p>
+
+<p>
+Ce test porte sur la création d'un utilisateur. Il vérifie la réponse en terme de code de retour de HTTP (<code>201 - created</code>) et qu'on récupère l'URI de la nouvelle instance de resource dans les en-tête HTTP sous le nom <code>Location</code>. Les informations concernant l'utilisateur seront envoyées au format JSON. Pour que ce format soit prit en charge par Jersey, il faut modifier le fichier <code>pom.xml</code>. La dépendance à utiliser est déjà dans le fichier généré par l'Archetype mais il faut la décommenter.
+</p>
+
+<pre class="example">
+&lt;dependencies&gt;
+  [...]
+   &lt;dependency&gt;
+        &lt;groupId&gt;org.glassfish.jersey.media&lt;/groupId&gt;
+        &lt;artifactId&gt;jersey-media-moxy&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+  [...]
+</pre>
+
+<p>
+Nous pouvons maintenant écrire notre classe de test.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span class="linenr"> 1: </span><span style="color: #a020f0;">package</span> fr.univ_lille.<span style="color: #008b8b;">iut</span>;
+<span class="linenr"> 2: </span>
+<span class="linenr"> 3: </span><span style="color: #a020f0;">import</span> <span style="color: #008b8b;">javax</span>.<span style="color: #008b8b;">ws</span>.<span style="color: #008b8b;">rs</span>.<span style="color: #008b8b;">client</span>.<span style="color: #228b22;">Entity</span>;
+<span class="linenr"> 4: </span><span style="color: #a020f0;">import</span> <span style="color: #008b8b;">javax</span>.<span style="color: #008b8b;">ws</span>.<span style="color: #008b8b;">rs</span>.<span style="color: #008b8b;">core</span>.<span style="color: #228b22;">MediaType</span>;
+<span class="linenr"> 5: </span><span style="color: #a020f0;">import</span> <span style="color: #008b8b;">javax</span>.<span style="color: #008b8b;">ws</span>.<span style="color: #008b8b;">rs</span>.<span style="color: #008b8b;">core</span>.<span style="color: #228b22;">Application</span>;
+<span class="linenr"> 6: </span><span style="color: #a020f0;">import</span> <span style="color: #008b8b;">javax</span>.<span style="color: #008b8b;">ws</span>.<span style="color: #008b8b;">rs</span>.<span style="color: #008b8b;">core</span>.<span style="color: #228b22;">Response</span>;
+<span class="linenr"> 7: </span>
+<span class="linenr"> 8: </span><span style="color: #a020f0;">import</span> <span style="color: #008b8b;">org</span>.<span style="color: #008b8b;">glassfish</span>.<span style="color: #008b8b;">jersey</span>.<span style="color: #008b8b;">server</span>.<span style="color: #228b22;">ResourceConfig</span>;
+<span class="linenr"> 9: </span><span style="color: #a020f0;">import</span> <span style="color: #008b8b;">org</span>.<span style="color: #008b8b;">glassfish</span>.<span style="color: #008b8b;">jersey</span>.<span style="color: #008b8b;">test</span>.<span style="color: #228b22;">JerseyTest</span>;
+<span class="linenr">10: </span>
+<span class="linenr">11: </span><span style="color: #a020f0;">import</span> <span style="color: #008b8b;">org</span>.<span style="color: #008b8b;">junit</span>.<span style="color: #228b22;">Test</span>;
+<span class="linenr">12: </span><span style="color: #a020f0;">import</span> <span style="color: #a020f0;">static</span> <span style="color: #008b8b;">org</span>.<span style="color: #008b8b;">junit</span>.Assert.<span style="color: #228b22;">assertEquals</span>;
+<span class="linenr">13: </span><span style="color: #a020f0;">import</span> <span style="color: #a020f0;">static</span> <span style="color: #008b8b;">org</span>.<span style="color: #008b8b;">junit</span>.Assert.<span style="color: #228b22;">assertTrue</span>;
+<span class="linenr">14: </span>
+<span class="linenr">15: </span><span style="color: #a020f0;">import</span> <span style="color: #008b8b;">java</span>.<span style="color: #008b8b;">net</span>.<span style="color: #228b22;">URI</span>;
+<span class="linenr">16: </span><span style="color: #a020f0;">import</span> <span style="color: #008b8b;">java</span>.<span style="color: #008b8b;">net</span>.<span style="color: #228b22;">URISyntaxException</span>;
+<span class="linenr">17: </span>
+<span class="linenr">18: </span><span style="color: #a020f0;">public</span> <span style="color: #a020f0;">class</span> <span style="color: #228b22;">UserResourceTest</span> <span style="color: #a020f0;">extends</span> <span style="color: #228b22;">JerseyTest</span> {
+<span class="linenr">19: </span>
+<span class="linenr">20: </span>    <span style="color: #8b2252;">/**</span>
+<span class="linenr">21: </span><span style="color: #8b2252;">     * Il est obligatoire de red&#233;finir cette m&#233;thode qui permet de configurer le contexte de Jersey</span>
+<span class="linenr">22: </span><span style="color: #8b2252;">     */</span>
+<span class="linenr">23: </span>    @Override
+<span class="linenr">24: </span>    <span style="color: #a020f0;">protected</span> Application configure() {
+<span class="linenr">25: </span>        <span style="color: #a020f0;">return</span> <span style="color: #a020f0;">new</span> <span style="color: #228b22;">ResourceConfig</span>(UserResource.<span style="color: #a020f0;">class</span>);  
+<span class="linenr">26: </span>    }
+<span class="linenr">27: </span>
+<span class="linenr">28: </span>    <span style="color: #8b2252;">/**</span>
+<span class="linenr">29: </span><span style="color: #8b2252;">     * Test de cr&#233;ation d'un utilisateur (retour HTTP et envoi de l'URI de la nouvelle instance)</span>
+<span class="linenr">30: </span><span style="color: #8b2252;">     */</span>
+<span class="linenr">31: </span>    @Test
+<span class="linenr">32: </span>    <span style="color: #a020f0;">public</span> <span style="color: #228b22;">void</span> testCreateUser() {
+<span class="linenr">33: </span>        <span style="color: #228b22;">User</span> <span style="color: #a0522d;">user</span> = <span style="color: #a020f0;">new</span> <span style="color: #228b22;">User</span>(<span style="color: #8b2252;">"jsteed"</span>, <span style="color: #8b2252;">"Steed"</span>, <span style="color: #8b2252;">"jsteed@mi5.uk"</span>);
+<span class="linenr">34: </span>        <span style="color: #b22222;">// </span><span style="color: #b22222;">Conversion de l'instance de User au format JSON pour l'envoi</span>
+<span id="coderef-entity" class="coderef-off"><span class="linenr">35: </span>        Entity&lt;User&gt; userEntity = Entity.entity(user, <span style="color: #008b8b;">MediaType</span>.APPLICATION_JSON);</span>
+<span class="linenr">36: </span>
+<span class="linenr">37: </span>        <span style="color: #b22222;">// </span><span style="color: #b22222;">Envoi de la requ&#234;te HTTP POST pour la cr&#233;ation de l'utilisateur</span>
+<span id="coderef-post" class="coderef-off"><span class="linenr">38: </span>        <span style="color: #228b22;">Response</span> <span style="color: #a0522d;">response</span> = target(<span style="color: #8b2252;">"/users"</span>).request().post(userEntity);</span>
+<span class="linenr">39: </span>
+<span class="linenr">40: </span>        <span style="color: #b22222;">// </span><span style="color: #b22222;">V&#233;rification du code de retour HTTP</span>
+<span class="linenr">41: </span>        assertEquals(201, response.getStatus());
+<span class="linenr">42: </span>
+<span class="linenr">43: </span>        <span style="color: #b22222;">// </span><span style="color: #b22222;">V&#233;rification que la cr&#233;ation renvoie bien l'URI de la nouvelle instance dans le header HTTP 'Location'</span>
+<span class="linenr">44: </span>        <span style="color: #b22222;">// </span><span style="color: #b22222;">ici : http://localhost:8080/users/jsteed</span>
+<span class="linenr">45: </span>        <span style="color: #228b22;">URI</span> <span style="color: #a0522d;">uriAttendue</span> = target(<span style="color: #8b2252;">"/users"</span>).path(user.getLogin()).getUri();
+<span class="linenr">46: </span>        assertTrue(uriAttendue.equals(response.getLocation()));
+<span class="linenr">47: </span>    }
+<span class="linenr">48: </span>}
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="./warning-17.png" alt="warning-17.png" align="left" width="100px" hspace="50px" />
+</p>
+</div>
+<ul class="org-ul">
+<li>Par convention, la création d'une nouvelle ressource utilise la méthode HTTP POST. Elle est confirmée par un code de retour <code>201 - created</code> <b>ET</b> l'en-tête HTTP doit contenir un champ <code>Location</code> définissant l'URI de la nouvelle resource. Nous allons donc tester ces deux éléments.
+</li>
+<li>La méthode <a href="#coderef-post"class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-post');" onmouseout="CodeHighlightOff(this, 'coderef-post');"><code>post()</code></a> que nous avons utilisée prend en paramètre une classe <a href="https:jersey.java.net/apidocs/2.16/jersey/javax/ws/rs/client/Entity.html">Entity</a>. Celle-ci encapsule les données transmises, associées à des informations telles que l'encodage des données (ici <code>application/json</code>).
+</li>
+</ul>
+
+
+<p>
+Afin de pouvoir compiler et utiliser la classe de test, nous avons besoin d'une classe ressource minimale que voici :
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span class="linenr"> 1: </span><span style="color: #a020f0;">package</span> fr.univ_lille.<span style="color: #008b8b;">iut</span>;
+<span class="linenr"> 2: </span>
+<span class="linenr"> 3: </span><span style="color: #a020f0;">import</span> <span style="color: #008b8b;">javax</span>.<span style="color: #008b8b;">ws</span>.<span style="color: #008b8b;">rs</span>.<span style="color: #228b22;">Path</span>;
+<span class="linenr"> 4: </span>
+<span class="linenr"> 5: </span><span style="color: #8b2252;">/**</span>
+<span class="linenr"> 6: </span><span style="color: #8b2252;"> * Ressource User (accessible avec le chemin "/users")</span>
+<span class="linenr"> 7: </span><span style="color: #8b2252;"> */</span>
+<span class="linenr"> 8: </span>@Path(<span style="color: #8b2252;">"users"</span>)
+<span class="linenr"> 9: </span><span style="color: #a020f0;">public</span> <span style="color: #a020f0;">class</span> UserResource {
+<span class="linenr">10: </span>
+<span class="linenr">11: </span>    <span style="color: #8b2252;">/**</span>
+<span class="linenr">12: </span><span style="color: #8b2252;">     * Une ressource doit avoir un contructeur (&#233;ventuellement sans arguments)</span>
+<span class="linenr">13: </span><span style="color: #8b2252;">     */</span>
+<span id="coderef-constructeur" class="coderef-off"><span class="linenr">14: </span>    <span style="color: #a020f0;">public</span> UserResource() {</span>
+<span class="linenr">15: </span>    }
+<span class="linenr">16: </span>}
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="./warning-17.png" alt="warning-17.png" align="left" width="100px" hspace="50px" />
+</p>
+</div>
+<ul class="org-ul">
+<li>La spécification JAX-RS indique qu'une ressource (i.e. une classe associée à une annotation <code>@Path</code>) doit avoir au moins un <a href="#coderef-constructeur"class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-constructeur');" onmouseout="CodeHighlightOff(this, 'coderef-constructeur');">contructeur public</a> pour lequel JAX-RS va initialiser les paramètres à partir de la requête. Ce constructeur peut éventuellement être sans paramètres.
+</li>
+</ul>
+
+<p>
+Nous pouvons maintenant faire notre test avec <code>mvn test</code>. Bien sûr, le test échoue&#x2026;
+</p>
+
+<pre class="example">
+petery@neuvilloise:~/Sandbox/REST/first-rest-app$ mvn test
+[INFO] Scanning for projects...
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building first-rest-app 1.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-resources-plugin:2.3:resources (default-resources) @ first-rest-app ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 0 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:2.5.1:compile (default-compile) @ first-rest-app ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- maven-resources-plugin:2.3:testResources (default-testResources) @ first-rest-app ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /home/petery/Sandbox/REST/first-rest-app/src/test/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:2.5.1:testCompile (default-testCompile) @ first-rest-app ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.10:test (default-test) @ first-rest-app ---
+[INFO] Surefire report directory: /home/petery/Sandbox/REST/first-rest-app/target/surefire-reports
+
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+Running fr.univ_lille.iut.UserResourceTest
+févr. 23, 2015 3:04:22 PM org.glassfish.jersey.test.jetty.JettyTestContainerFactory$JettyTestContainer &lt;init&gt;
+INFOS: Creating JettyTestContainer configured at the base URI http://localhost:9998/
+févr. 23, 2015 3:04:23 PM org.glassfish.jersey.internal.Errors logErrors
+AVERTISSEMENT: The following warnings have been detected: WARNING: A resource, Resource{"users", 0 child resources, 0 resource methods, 0 sub-resource locator, 0 method handler classes, 0 method handler instances}, with path "users" is empty. It has no resource (or sub resource) methods neither sub resource locators defined.
+
+2015-02-23 15:04:23.145:INFO:oejs.Server:main: jetty-9.1.1.v20140108
+2015-02-23 15:04:23.180:INFO:oejs.ServerConnector:main: Started ServerConnector@1de10458{HTTP/1.1}{0.0.0.0:9998}
+2015-02-23 15:04:23.622:INFO:oejs.ServerConnector:main: Stopped ServerConnector@1de10458{HTTP/1.1}{0.0.0.0:9998}
+Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 1.364 sec &lt;&lt;&lt; FAILURE!
+
+Results :
+
+Failed tests:   testCreateUser(fr.univ_lille.iut.UserResourceTest): expected:&lt;201&gt; but was:&lt;404&gt;
+
+Tests run: 1, Failures: 1, Errors: 0, Skipped: 0
+
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 3.101s
+[INFO] Finished at: Mon Feb 23 15:04:23 CET 2015
+[INFO] Final Memory: 9M/238M
+[INFO] ------------------------------------------------------------------------
+</pre>
+
+<p>
+Nous allons maintenant compléter notre classe ressource avec la création des utilisateurs (HTTP POST). 
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span class="linenr"> 1: </span><span style="color: #a020f0;">package</span> fr.univ_lille.<span style="color: #008b8b;">iut</span>;
+<span class="linenr"> 2: </span>
+<span class="linenr"> 3: </span><span style="color: #a020f0;">import</span> <span style="color: #008b8b;">javax</span>.<span style="color: #008b8b;">ws</span>.<span style="color: #008b8b;">rs</span>.<span style="color: #228b22;">Path</span>;
+<span class="linenr"> 4: </span><span style="color: #a020f0;">import</span> <span style="color: #008b8b;">javax</span>.<span style="color: #008b8b;">ws</span>.<span style="color: #008b8b;">rs</span>.<span style="color: #228b22;">POST</span>;
+<span class="linenr"> 5: </span>
+<span class="linenr"> 6: </span><span style="color: #a020f0;">import</span> <span style="color: #008b8b;">javax</span>.<span style="color: #008b8b;">ws</span>.<span style="color: #008b8b;">rs</span>.<span style="color: #008b8b;">core</span>.<span style="color: #228b22;">Response</span>;
+<span class="linenr"> 7: </span><span style="color: #a020f0;">import</span> <span style="color: #008b8b;">javax</span>.<span style="color: #008b8b;">ws</span>.<span style="color: #008b8b;">rs</span>.<span style="color: #008b8b;">core</span>.<span style="color: #228b22;">UriBuilder</span>;
+<span class="linenr"> 8: </span><span style="color: #a020f0;">import</span> <span style="color: #008b8b;">javax</span>.<span style="color: #008b8b;">ws</span>.<span style="color: #008b8b;">rs</span>.<span style="color: #008b8b;">core</span>.<span style="color: #228b22;">UriInfo</span>;
+<span class="linenr"> 9: </span><span style="color: #a020f0;">import</span> <span style="color: #008b8b;">javax</span>.<span style="color: #008b8b;">ws</span>.<span style="color: #008b8b;">rs</span>.<span style="color: #008b8b;">core</span>.<span style="color: #228b22;">Context</span>;
+<span class="linenr">10: </span>
+<span class="linenr">11: </span><span style="color: #a020f0;">import</span> <span style="color: #008b8b;">java</span>.<span style="color: #008b8b;">net</span>.<span style="color: #228b22;">URI</span>;
+<span class="linenr">12: </span><span style="color: #a020f0;">import</span> <span style="color: #008b8b;">java</span>.<span style="color: #008b8b;">net</span>.<span style="color: #228b22;">URISyntaxException</span>;
+<span class="linenr">13: </span>
+<span class="linenr">14: </span><span style="color: #a020f0;">import</span> <span style="color: #008b8b;">java</span>.<span style="color: #008b8b;">util</span>.<span style="color: #228b22;">Map</span>;
+<span class="linenr">15: </span><span style="color: #a020f0;">import</span> <span style="color: #008b8b;">java</span>.<span style="color: #008b8b;">util</span>.<span style="color: #228b22;">HashMap</span>;
+<span class="linenr">16: </span>
+<span class="linenr">17: </span><span style="color: #8b2252;">/**</span>
+<span class="linenr">18: </span><span style="color: #8b2252;"> * Ressource User (accessible avec le chemin "/users")</span>
+<span class="linenr">19: </span><span style="color: #8b2252;"> */</span>
+<span class="linenr">20: </span>@Path(<span style="color: #8b2252;">"users"</span>)
+<span class="linenr">21: </span><span style="color: #a020f0;">public</span> <span style="color: #a020f0;">class</span> UserResource {
+<span class="linenr">22: </span>    <span style="color: #b22222;">// </span><span style="color: #b22222;">Pour l'instant, on se contentera d'une variable statique pour conserver l'&#233;tat</span>
+<span class="linenr">23: </span>    <span style="color: #a020f0;">private</span> <span style="color: #a020f0;">static</span> <span style="color: #228b22;">Map</span>&lt;String, User&gt; users = <span style="color: #a020f0;">new</span> <span style="color: #228b22;">HashMap</span>&lt;&gt;();
+<span class="linenr">24: </span>
+<span class="linenr">25: </span>    <span style="color: #b22222;">// </span><span style="color: #b22222;">L'annotation @Context permet de r&#233;cup&#233;rer des informations sur le contexte d'ex&#233;cution de la ressource.</span>
+<span class="linenr">26: </span>    <span style="color: #b22222;">// </span><span style="color: #b22222;">Ici, on r&#233;cup&#232;re les informations concernant l'URI de la requ&#234;te HTTP, ce qui nous permettra de manipuler</span>
+<span class="linenr">27: </span>    <span style="color: #b22222;">// </span><span style="color: #b22222;">les URI de mani&#232;re g&#233;n&#233;rique.</span>
+<span class="linenr">28: </span>    @Context
+<span class="linenr">29: </span>    <span style="color: #a020f0;">public</span> UriInfo uriInfo;
+<span class="linenr">30: </span>
+<span class="linenr">31: </span>    <span style="color: #8b2252;">/**</span>
+<span class="linenr">32: </span><span style="color: #8b2252;">     * Une ressource doit avoir un contructeur (&#233;ventuellement sans arguments)</span>
+<span class="linenr">33: </span><span style="color: #8b2252;">     */</span>
+<span class="linenr">34: </span>    <span style="color: #a020f0;">public</span> UserResource() {
+<span class="linenr">35: </span>    }
+<span class="linenr">36: </span>
+<span class="linenr">37: </span>    <span style="color: #8b2252;">/**</span>
+<span class="linenr">38: </span><span style="color: #8b2252;">     * M&#233;thode de cr&#233;ation d'un utilisateur qui prend en charge les requ&#234;tes HTTP POST</span>
+<span class="linenr">39: </span><span style="color: #8b2252;">     * La m&#233;thode renvoie l'URI de la nouvelle instance en cas de succ&#232;s</span>
+<span class="linenr">40: </span><span style="color: #8b2252;">     *</span>
+<span class="linenr">41: </span><span style="color: #8b2252;">     * </span><span style="color: #008b8b;">@param</span><span style="color: #8b2252;">  user Instance d'utilisateur &#224; cr&#233;er</span>
+<span class="linenr">42: </span><span style="color: #8b2252;">     * </span><span style="color: #008b8b;">@return</span><span style="color: #8b2252;"> Response le corps de la r&#233;ponse est vide, le code de retour HTTP est fix&#233; &#224; 201 si la cr&#233;ation est faite</span>
+<span class="linenr">43: </span><span style="color: #8b2252;">     *         L'en-t&#234;te contient un champs Location avec l'URI de la nouvelle ressource</span>
+<span class="linenr">44: </span><span style="color: #8b2252;">     */</span>
+<span class="linenr">45: </span>    @POST
+<span id="coderef-retour" class="coderef-off"><span class="linenr">46: </span>    <span style="color: #a020f0;">public</span> Response createUser(<span style="color: #228b22;">User</span> <span style="color: #a0522d;">user</span>) {</span>
+<span class="linenr">47: </span>        <span style="color: #b22222;">// </span><span style="color: #b22222;">Si l'utilisateur existe d&#233;j&#224;, renvoyer 409</span>
+<span class="linenr">48: </span>        <span style="color: #a020f0;">if</span> ( users.containsKey(user.getLogin()) ) {
+<span class="linenr">49: </span>            <span style="color: #a020f0;">return</span> Response.status(<span style="color: #008b8b;">Response</span>.<span style="color: #008b8b;">Status</span>.CONFLICT).build();
+<span class="linenr">50: </span>        }
+<span class="linenr">51: </span>        <span style="color: #a020f0;">else</span> {
+<span class="linenr">52: </span>            users.put(user.getLogin(), user);
+<span class="linenr">53: </span>
+<span class="linenr">54: </span>            <span style="color: #b22222;">// </span><span style="color: #b22222;">On renvoie 201 et l'instance de la ressource dans le Header HTTP 'Location'</span>
+<span class="linenr">55: </span>            <span style="color: #228b22;">URI</span> <span style="color: #a0522d;">instanceURI</span> = uriInfo.getAbsolutePathBuilder().path(user.getLogin()).build();
+<span class="linenr">56: </span>            <span style="color: #a020f0;">return</span> Response.created(instanceURI).build();
+<span class="linenr">57: </span>        }
+<span class="linenr">58: </span>    }
+<span class="linenr">59: </span>}
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="./warning-17.png" alt="warning-17.png" align="left" width="100px" hspace="50px" />
+</p>
+</div>
+
+<ul class="org-ul">
+<li>Par convention lors d'une création de ressource, la réponse utilise un code de retour <code>201</code> et indique l'URI de la nouvelle resource dans l'en-tête HTTP (champ 'Location').
+</li>
+<li>La spécification JAX-RS précise que si le corps de la réponse HTTP est vide (c'est le cas ici), alors le retour de la <a href="#coderef-retour"class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-retour');" onmouseout="CodeHighlightOff(this, 'coderef-retour');">méthode java</a> doit être de type <a href="https:jersey.java.net/apidocs/2.16/jersey/javax/ws/rs/core/Response.html"><code>Reponse</code></a>.
+</li>
+</ul>
+
+<p>
+Nous pouvons maintenant tester avec succès notre création d'utilisateur avec <code>mvn test</code>
+</p>
+
+<pre class="example">
+petery@neuvilloise:~/Sandbox/REST/first-rest-app$ mvn test
+[INFO] Scanning for projects...
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building first-rest-app 1.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-resources-plugin:2.3:resources (default-resources) @ first-rest-app ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 0 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:2.5.1:compile (default-compile) @ first-rest-app ---
+[INFO] Compiling 1 source file to /home/petery/Sandbox/REST/first-rest-app/target/classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.3:testResources (default-testResources) @ first-rest-app ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /home/petery/Sandbox/REST/first-rest-app/src/test/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:2.5.1:testCompile (default-testCompile) @ first-rest-app ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.10:test (default-test) @ first-rest-app ---
+[INFO] Surefire report directory: /home/petery/Sandbox/REST/first-rest-app/target/surefire-reports
+
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+Running fr.univ_lille.iut.UserResourceTest
+févr. 23, 2015 3:16:11 PM org.glassfish.jersey.test.jetty.JettyTestContainerFactory$JettyTestContainer &lt;init&gt;
+INFOS: Creating JettyTestContainer configured at the base URI http://localhost:9998/
+2015-02-23 15:16:11.649:INFO:oejs.Server:main: jetty-9.1.1.v20140108
+2015-02-23 15:16:11.689:INFO:oejs.ServerConnector:main: Started ServerConnector@15858f02{HTTP/1.1}{0.0.0.0:9998}
+2015-02-23 15:16:12.242:INFO:oejs.ServerConnector:main: Stopped ServerConnector@15858f02{HTTP/1.1}{0.0.0.0:9998}
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.385 sec
+
+Results :
+
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 3.465s
+[INFO] Finished at: Mon Feb 23 15:16:12 CET 2015
+[INFO] Final Memory: 17M/303M
+[INFO] ------------------------------------------------------------------------
+</pre>
+
+<p>
+A titre d'exemple voici le résultat de la création d'un utilisateur avec le plugin Firefox nommé RESTClient (après avoir lancé le serveur avec <code>mvn jetty:run</code>) :
+</p>
+
+
+<div class="figure">
+<p><img src="./RESTClient_POST.png" alt="RESTClient_POST.png" />
+</p>
+<p><span class="figure-number">Figure&nbsp;3&nbsp;:</span> Création d'un utilisateur via le plugin RESTClient</p>
+</div>
+
+<p>
+Il faut également tester le cas où on essaye de créer deux utilisateurs avec le même login. Pour cela, on ajoute le test suivant à la classe <code>UserResourceTest</code> :
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span class="linenr"> 1: </span>@Path(<span style="color: #8b2252;">"users"</span>)
+<span class="linenr"> 2: </span><span style="color: #a020f0;">public</span> <span style="color: #a020f0;">class</span> UserResource {
+<span class="linenr"> 3: </span>   [...]
+<span class="linenr"> 4: </span>    <span style="color: #8b2252;">/**</span>
+<span class="linenr"> 5: </span><span style="color: #8b2252;">     * Test de cr&#233;ation en double d'un utilisateur. Doit renvoyer 409</span>
+<span class="linenr"> 6: </span><span style="color: #8b2252;">     * ! Cela fonctionne car le test pr&#233;c&#233;dent &#224; d&#233;j&#224; cr&#233;&#233; l'utilisateur et que le container est conserv&#233; !</span>
+<span class="linenr"> 7: </span><span style="color: #8b2252;">     */</span>
+<span class="linenr"> 8: </span>    @Test
+<span class="linenr"> 9: </span>    <span style="color: #a020f0;">public</span> <span style="color: #228b22;">void</span> testCreateSameUser() {
+<span class="linenr">10: </span>        <span style="color: #228b22;">User</span> <span style="color: #a0522d;">user</span> = <span style="color: #a020f0;">new</span> <span style="color: #228b22;">User</span>(<span style="color: #8b2252;">"jsteed"</span>, <span style="color: #8b2252;">"Steed"</span>, <span style="color: #8b2252;">"jsteed@mi5.uk"</span>);
+<span class="linenr">11: </span>        Entity&lt;User&gt; userEntity = Entity.entity(user, <span style="color: #008b8b;">MediaType</span>.APPLICATION_JSON);
+<span class="linenr">12: </span>
+<span class="linenr">13: </span>        <span style="color: #228b22;">int</span> <span style="color: #a0522d;">same</span> = target(<span style="color: #8b2252;">"/users"</span>).request().post(userEntity).getStatus();
+<span class="linenr">14: </span>        assertEquals(409, same);
+<span class="linenr">15: </span>    }
+<span class="linenr">16: </span>  [...]
+</pre>
+</div>
+
+<p>
+<img src="./warning-17.png" alt="warning-17.png" align="left" width="100px" hspace="50px" />
+ Ce test réussi. Toutefois il révèle un problème qu'il va falloir résoudre : la ressource conserve un état d'un test à l'autre, les tests ne peuvent donc pas être indépendants. Or JUnit ne spécifie pas, <i>a priori</i>, l'ordre d'exécution des tests. Pour résoudre cela, nous allons devoir imposer un ordre (voir ce <a href="https:github.com/junit-team/junit/wiki/Test-execution-order">lien</a>).
+</p>
+
+<p>
+Nous allons donc annoter notre classe de manière à fixer l'ordre d'exécution des tests et renommer nos deux méthodes de test. Notre classe va maintenant ressembler à cela :
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span class="linenr"> 1: </span>[...]
+<span class="linenr"> 2: </span><span style="color: #a020f0;">import</span> <span style="color: #008b8b;">org</span>.<span style="color: #008b8b;">junit</span>.<span style="color: #228b22;">FixMethodOrder</span>;
+<span class="linenr"> 3: </span><span style="color: #a020f0;">import</span> <span style="color: #008b8b;">org</span>.<span style="color: #008b8b;">junit</span>.<span style="color: #008b8b;">runners</span>.<span style="color: #228b22;">MethodSorters</span>;
+<span class="linenr"> 4: </span>
+<span class="linenr"> 5: </span>@FixMethodOrder(<span style="color: #008b8b;">MethodSorters</span>.NAME_ASCENDING)
+<span class="linenr"> 6: </span><span style="color: #a020f0;">public</span> <span style="color: #a020f0;">class</span> UserResourceTest <span style="color: #a020f0;">extends</span> <span style="color: #228b22;">JerseyTest</span> {
+<span class="linenr"> 7: </span> [...]
+<span class="linenr"> 8: </span>
+<span class="linenr"> 9: </span>    @Test
+<span class="linenr">10: </span>    <span style="color: #a020f0;">public</span> <span style="color: #228b22;">void</span> test_B_CreateUser() {
+<span class="linenr">11: </span>    [...]
+<span class="linenr">12: </span>    }
+<span class="linenr">13: </span>
+<span class="linenr">14: </span>    @Test
+<span class="linenr">15: </span>    <span style="color: #a020f0;">public</span> <span style="color: #228b22;">void</span> test_C_CreateSameUser() {
+<span class="linenr">16: </span>    [...]
+<span class="linenr">17: </span>    }
+<span class="linenr">18: </span>}
+</pre>
+</div>
+
+<p>
+Sur cette base, nous allons pouvoir prendre en charge les autres méthodes HTTP.
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-2-3" class="outline-3">
+<h3 id="sec-2-3"><span class="section-number-3">2.3</span> Deuxième étape : les méthodes GET, PUT et DELETE</h3>
+<div class="outline-text-3" id="text-2-3">
+</div><div id="outline-container-sec-2-3-1" class="outline-4">
+<h4 id="sec-2-3-1"><span class="section-number-4">2.3.1</span> La méthode GET</h4>
+<div class="outline-text-4" id="text-2-3-1">
+<p>
+La méthode HTTP GET permet d'obtenir la liste des utilisateurs si on l'utilise sur <code>/users</code> et un utilisateur spécifique si on l'utilise sur <code>/user/{login}</code>
+</p>
+
+<p>
+Voici les différents tests qu'on peut réaliser dans le premier cas :
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span class="linenr"> 1: </span><span style="color: #a020f0;">public</span> <span style="color: #a020f0;">class</span> <span style="color: #228b22;">UserResourceTest</span> <span style="color: #a020f0;">extends</span> <span style="color: #228b22;">JerseyTest</span> {
+<span class="linenr"> 2: </span>[...]
+<span class="linenr"> 3: </span>    <span style="color: #8b2252;">/**</span>
+<span class="linenr"> 4: </span><span style="color: #8b2252;">     * V&#233;rifie qu'initialement on a une liste d'utilisateurs vide</span>
+<span class="linenr"> 5: </span><span style="color: #8b2252;">     */</span>
+<span class="linenr"> 6: </span>    @Test
+<span class="linenr"> 7: </span>    <span style="color: #a020f0;">public</span> <span style="color: #228b22;">void</span> test_A_GetEmptyListofUsers() {
+<span id="coderef-generictype" class="coderef-off"><span class="linenr"> 8: </span>        List&lt;User&gt; list = target(<span style="color: #8b2252;">"/users"</span>).request().get(<span style="color: #a020f0;">new</span> <span style="color: #228b22;">GenericType</span>&lt;List&lt;User&gt;&gt;(){});</span>
+<span class="linenr"> 9: </span>        assertTrue(list.isEmpty());
+<span class="linenr">10: </span>    }
+<span class="linenr">11: </span>
+<span class="linenr">12: </span>    <span style="color: #8b2252;">/**</span>
+<span class="linenr">13: </span><span style="color: #8b2252;">     * V&#233;rifie que je renvoie bien une liste contenant tous les utilisateurs (ici 2)</span>
+<span class="linenr">14: </span><span style="color: #8b2252;">     */</span>
+<span class="linenr">15: </span>    @Test
+<span class="linenr">16: </span>    <span style="color: #a020f0;">public</span> <span style="color: #228b22;">void</span> test_D_GetTwoUsers() {
+<span class="linenr">17: </span>        <span style="color: #228b22;">User</span> <span style="color: #a0522d;">user</span> = <span style="color: #a020f0;">new</span> <span style="color: #228b22;">User</span>(<span style="color: #8b2252;">"epeel"</span>, <span style="color: #8b2252;">"Peel"</span>, <span style="color: #8b2252;">"epeel@mi5.uk"</span>);
+<span class="linenr">18: </span>        Entity&lt;User&gt; userEntity = Entity.entity(user, <span style="color: #008b8b;">MediaType</span>.APPLICATION_JSON);
+<span class="linenr">19: </span>
+<span class="linenr">20: </span>        target(<span style="color: #8b2252;">"/users"</span>).request().post(userEntity);
+<span class="linenr">21: </span>
+<span class="linenr">22: </span>        List&lt;User&gt; list = target(<span style="color: #8b2252;">"/users"</span>).request().get(<span style="color: #a020f0;">new</span> <span style="color: #228b22;">GenericType</span>&lt;List&lt;User&gt;&gt;(){});
+<span class="linenr">23: </span>        assertEquals(2, list.size());
+<span class="linenr">24: </span>    }
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="./warning-17.png" alt="warning-17.png" align="left" width="100px" hspace="50px" />
+</p>
+</div>
+<ul class="org-ul">
+<li>La méthode <a href="#coderef-generictype"class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-generictype');" onmouseout="CodeHighlightOff(this, 'coderef-generictype');"><code>get()</code></a> telle que nous l'utilisons ici permet de spécifier un type complexe basé sur une classe paramétrée que nous voulons récupérer dans le corps de la réponse HTTP. Il se base sur l'utilisation de la classe <a href="https:jersey.java.net/apidocs/2.16/jersey/javax/ws/rs/core/GenericType.html"><code>GenericType</code></a>.
+</li>
+</ul>
+
+<p>
+La classe <code>UserRessource</code> est complétée avec une nouvelle méthode prenant en charge HTTP GET sur <code>/users</code> :
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span class="linenr">1: </span><span style="color: #8b2252;">/**</span>
+<span class="linenr">2: </span><span style="color: #8b2252;"> * Method prenant en charge les requ&#234;tes HTTP GET.</span>
+<span class="linenr">3: </span><span style="color: #8b2252;"> *</span>
+<span class="linenr">4: </span><span style="color: #8b2252;"> * </span><span style="color: #008b8b;">@return</span><span style="color: #8b2252;"> Une liste d'utilisateurs</span>
+<span class="linenr">5: </span><span style="color: #8b2252;"> */</span>
+<span class="linenr">6: </span>@GET
+<span class="linenr">7: </span><span style="color: #a020f0;">public</span> List&lt;User&gt; getUsers() {
+<span class="linenr">8: </span>    <span style="color: #a020f0;">return</span> <span style="color: #a020f0;">new</span> <span style="color: #228b22;">ArrayList</span>&lt;User&gt;(users.values());
+<span class="linenr">9: </span>}
+</pre>
+</div>
+
+<p>
+En ce qui concerne le méthode HTTP GET sur <code>/users/{login}</code> on doit tester qu'on récupère bien l'instance d'un utilisateur et que tenter de récupérer un utilisateur inexistant renvoie une erreur HTTP 404.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span class="linenr"> 1: </span><span style="color: #8b2252;">/**</span>
+<span class="linenr"> 2: </span><span style="color: #8b2252;"> * V&#233;rifie la r&#233;cup&#233;ration d'un utilisateur sp&#233;cifique</span>
+<span class="linenr"> 3: </span><span style="color: #8b2252;"> */</span>
+<span class="linenr"> 4: </span>@Test
+<span class="linenr"> 5: </span><span style="color: #a020f0;">public</span> <span style="color: #228b22;">void</span> test_E_GetOneUser() {
+<span class="linenr"> 6: </span>    <span style="color: #228b22;">User</span> <span style="color: #a0522d;">user</span> = <span style="color: #a020f0;">new</span> <span style="color: #228b22;">User</span>(<span style="color: #8b2252;">"jsteed"</span>, <span style="color: #8b2252;">"Steed"</span>, <span style="color: #8b2252;">"jsteed@mi5.uk"</span>);
+<span class="linenr"> 7: </span>
+<span class="linenr"> 8: </span>    <span style="color: #228b22;">User</span> <span style="color: #a0522d;">result</span> = target(<span style="color: #8b2252;">"/users"</span>).path(<span style="color: #8b2252;">"jsteed"</span>).request().get(User.<span style="color: #a020f0;">class</span>);
+<span class="linenr"> 9: </span>    assertEquals(user, result);
+<span class="linenr">10: </span>}
+<span class="linenr">11: </span>
+<span class="linenr">12: </span><span style="color: #8b2252;">/**</span>
+<span class="linenr">13: </span><span style="color: #8b2252;"> * V&#233;rifie que la r&#233;cup&#233;ration d'un utilisateur inexistant renvoie 404</span>
+<span class="linenr">14: </span><span style="color: #8b2252;"> */</span>
+<span class="linenr">15: </span>@Test
+<span class="linenr">16: </span><span style="color: #a020f0;">public</span> <span style="color: #228b22;">void</span> test_F_GetInexistantUser() {
+<span class="linenr">17: </span>    <span style="color: #228b22;">int</span> <span style="color: #a0522d;">notFound</span> = target(<span style="color: #8b2252;">"/users"</span>).path(<span style="color: #8b2252;">"tking"</span>).request().get().getStatus();
+<span class="linenr">18: </span>    assertEquals(404, notFound);
+<span class="linenr">19: </span>}
+</pre>
+</div>
+
+<p>
+L'implémentation de cette méthode dans la classe <code>UserRessource</code> est assez simple :
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span class="linenr"> 1: </span><span style="color: #8b2252;">/** </span>
+<span class="linenr"> 2: </span><span style="color: #8b2252;"> * M&#233;thode prenant en charge les requ&#234;tes HTTP GET sur /users/{login}</span>
+<span class="linenr"> 3: </span><span style="color: #8b2252;"> *</span>
+<span class="linenr"> 4: </span><span style="color: #8b2252;"> * </span><span style="color: #008b8b;">@return</span><span style="color: #8b2252;"> Une instance de User</span>
+<span class="linenr"> 5: </span><span style="color: #8b2252;"> */</span>
+<span class="linenr"> 6: </span>@GET
+<span class="linenr"> 7: </span>@Path(<span style="color: #8b2252;">"{login}"</span>)
+<span id="coderef-pathparam" class="coderef-off"><span class="linenr"> 8: </span><span style="color: #a020f0;">public</span> User getUser(@PathParam(<span style="color: #8b2252;">"login"</span>) String login) {</span>
+<span class="linenr"> 9: </span>    <span style="color: #b22222;">// </span><span style="color: #b22222;">Si l'utilisateur est inconnu, on renvoie 404</span>
+<span class="linenr">10: </span>    <span style="color: #a020f0;">if</span> (  ! users.containsKey(login) ) {
+<span id="coderef-notfound" class="coderef-off"><span class="linenr">11: </span>        <span style="color: #a020f0;">throw</span> <span style="color: #a020f0;">new</span> <span style="color: #228b22;">NotFoundException</span>();</span>
+<span class="linenr">12: </span>    }
+<span class="linenr">13: </span>    <span style="color: #a020f0;">else</span> {
+<span class="linenr">14: </span>        <span style="color: #a020f0;">return</span> users.get(login);
+<span class="linenr">15: </span>    }
+<span class="linenr">16: </span>}
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="./warning-17.png" alt="warning-17.png" align="left" width="100px" hspace="50px" />
+</p>
+</div>
+<ul class="org-ul">
+<li>On notera l'introduction de l'annotation <code>@PathParam</code> qui permet d'initialiser un paramètre de la méthode avec un paramètre de chemin de l'URI. On pourrait éventuellement utiliser l'annotation <code>@DefaultValue</code> pour définir une valeur par défaut.
+</li>
+<li>La méthode renvoie une instance de la classe <code>User</code>. Quand l'utilisateur n'existe pas, on ne peut pas se contenter de renvoyer <code>null</code> car la spécification précise que dans ce cas, le code de retour généré est <code>204 - no content</code>. Heureusement, il existe un exemble d'<a href="#coderef-notfound"class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-notfound');" onmouseout="CodeHighlightOff(this, 'coderef-notfound');">exceptions</a> qui peuvent être levées et qui sont associées à des codes d'erreur HTTP.
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-sec-2-3-2" class="outline-4">
+<h4 id="sec-2-3-2"><span class="section-number-4">2.3.2</span> La méthode DELETE</h4>
+<div class="outline-text-4" id="text-2-3-2">
+<p>
+La méthode HTTP DELETE doit permettre la suppression d'une instance de ressource. On doit tester que le suppression est effective et qu'une tentative de suppression d'un utilisateur inexistant renvoie bien une erreur 404. Voici les méthodes de test correspondantes :
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span class="linenr"> 1: </span><span style="color: #8b2252;">/**</span>
+<span class="linenr"> 2: </span><span style="color: #8b2252;"> *</span>
+<span class="linenr"> 3: </span><span style="color: #8b2252;"> * V&#233;rifie que la suppression d'une ressource est effective</span>
+<span class="linenr"> 4: </span><span style="color: #8b2252;"> */</span>
+<span class="linenr"> 5: </span>@Test
+<span class="linenr"> 6: </span><span style="color: #a020f0;">public</span> <span style="color: #228b22;">void</span> test_G_DeleteOneUser() {
+<span class="linenr"> 7: </span>    <span style="color: #228b22;">int</span> <span style="color: #a0522d;">code</span> = target(<span style="color: #8b2252;">"/users"</span>).path(<span style="color: #8b2252;">"jsteed"</span>).request().delete().getStatus();
+<span class="linenr"> 8: </span>    assertEquals(204, code);
+<span class="linenr"> 9: </span>
+<span class="linenr">10: </span>    <span style="color: #228b22;">int</span> <span style="color: #a0522d;">notFound</span> = target(<span style="color: #8b2252;">"/users"</span>).path(<span style="color: #8b2252;">"jsteed"</span>).request().get().getStatus();
+<span class="linenr">11: </span>    assertEquals(404, notFound);    
+<span class="linenr">12: </span>}
+<span class="linenr">13: </span>
+<span class="linenr">14: </span><span style="color: #8b2252;">/**</span>
+<span class="linenr">15: </span><span style="color: #8b2252;"> *</span>
+<span class="linenr">16: </span><span style="color: #8b2252;"> * V&#233;rifie que la suppression d'un utilisateur inexistant renvoie 404</span>
+<span class="linenr">17: </span><span style="color: #8b2252;"> */</span>
+<span class="linenr">18: </span>@Test
+<span class="linenr">19: </span><span style="color: #a020f0;">public</span> <span style="color: #228b22;">void</span> test_H_DeleteIntexistantUser() {
+<span class="linenr">20: </span>    <span style="color: #228b22;">int</span> <span style="color: #a0522d;">notFound</span> = target(<span style="color: #8b2252;">"/users"</span>).path(<span style="color: #8b2252;">"tking"</span>).request().delete().getStatus();
+<span class="linenr">21: </span>    assertEquals(404, notFound);
+<span class="linenr">22: </span>}
+</pre>
+</div>
+
+<p>
+Encore une fois, l'implémentation de la méthode est relativement simple. On peut noter que comme cette méthode ne renvoie pas de contenu dans le corps de la réponse HTTP, on utilise comme valeur de retour de la méthode le type <code>Response</code> afin de pouvoir fixer une code de retour HTTP.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span class="linenr"> 1: </span>@DELETE
+<span class="linenr"> 2: </span>@Path(<span style="color: #8b2252;">"{login}"</span>)
+<span class="linenr"> 3: </span><span style="color: #a020f0;">public</span> Response deleteUser(@PathParam(<span style="color: #8b2252;">"login"</span>) String login) {
+<span class="linenr"> 4: </span>    <span style="color: #b22222;">// </span><span style="color: #b22222;">Si l'utilisateur est inconnu, on renvoie 404</span>
+<span class="linenr"> 5: </span>    <span style="color: #a020f0;">if</span> (  ! users.containsKey(login) ) {
+<span class="linenr"> 6: </span>        <span style="color: #a020f0;">throw</span> <span style="color: #a020f0;">new</span> <span style="color: #228b22;">NotFoundException</span>();
+<span class="linenr"> 7: </span>    }
+<span class="linenr"> 8: </span>    <span style="color: #a020f0;">else</span> {
+<span class="linenr"> 9: </span>        users.remove(login);
+<span class="linenr">10: </span>        <span style="color: #a020f0;">return</span> Response.status(<span style="color: #008b8b;">Response</span>.<span style="color: #008b8b;">Status</span>.NO_CONTENT).build();
+<span class="linenr">11: </span>    }
+<span class="linenr">12: </span>}
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-2-3-3" class="outline-4">
+<h4 id="sec-2-3-3"><span class="section-number-4">2.3.3</span> La méthode PUT</h4>
+<div class="outline-text-4" id="text-2-3-3">
+<p>
+La méthode HTTP PUT permet de modifier une ressource existante. On devra donc vérifier qu'une ressource est effectivement modifiée et qu'une tentative de modification d'une ressource inexistante renvoie une erreur 404.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span class="linenr"> 1: </span> <span style="color: #8b2252;">/**</span>
+<span class="linenr"> 2: </span><span style="color: #8b2252;">  *</span>
+<span class="linenr"> 3: </span><span style="color: #8b2252;">  * V&#233;rifie que la modification d'une ressource est effective</span>
+<span class="linenr"> 4: </span><span style="color: #8b2252;">  */</span>
+<span class="linenr"> 5: </span>@Test
+<span class="linenr"> 6: </span><span style="color: #a020f0;">public</span> <span style="color: #228b22;">void</span> test_I_ModifyUser() {
+<span class="linenr"> 7: </span>    <span style="color: #228b22;">User</span> <span style="color: #a0522d;">modified</span> = <span style="color: #a020f0;">new</span> <span style="color: #228b22;">User</span>(<span style="color: #8b2252;">"epeel"</span>, <span style="color: #8b2252;">"Peel"</span>, <span style="color: #8b2252;">"epeel@cia.usa"</span>);
+<span class="linenr"> 8: </span>    Entity&lt;User&gt; userEntity = Entity.entity(modified, <span style="color: #008b8b;">MediaType</span>.APPLICATION_JSON);
+<span class="linenr"> 9: </span>
+<span class="linenr">10: </span>    <span style="color: #228b22;">int</span> <span style="color: #a0522d;">noContent</span> = target(<span style="color: #8b2252;">"/users"</span>).path(<span style="color: #8b2252;">"epeel"</span>).request().put(userEntity).getStatus();
+<span class="linenr">11: </span>    assertEquals(204, noContent);
+<span class="linenr">12: </span>
+<span class="linenr">13: </span>    <span style="color: #228b22;">User</span> <span style="color: #a0522d;">retrieved</span> = target(<span style="color: #8b2252;">"/users"</span>).path(<span style="color: #8b2252;">"epeel"</span>).request().get(User.<span style="color: #a020f0;">class</span>);
+<span class="linenr">14: </span>    assertEquals(modified, retrieved);
+<span class="linenr">15: </span>}
+<span class="linenr">16: </span>
+<span class="linenr">17: </span> <span style="color: #8b2252;">/**</span>
+<span class="linenr">18: </span><span style="color: #8b2252;">  *</span>
+<span class="linenr">19: </span><span style="color: #8b2252;">  * V&#233;rifie que la suppression d'un utilisateur inexistant renvoie 404</span>
+<span class="linenr">20: </span><span style="color: #8b2252;">  */</span>
+<span class="linenr">21: </span> @Test
+<span class="linenr">22: </span> <span style="color: #a020f0;">public</span> <span style="color: #228b22;">void</span> test_J_ModifyInexistantUser() {
+<span class="linenr">23: </span>    <span style="color: #228b22;">User</span> <span style="color: #a0522d;">inexistant</span> = <span style="color: #a020f0;">new</span> <span style="color: #228b22;">User</span>(<span style="color: #8b2252;">"jsteed"</span>, <span style="color: #8b2252;">"Steed"</span>, <span style="color: #8b2252;">"jsteed@mi5.uk"</span>);
+<span class="linenr">24: </span>    Entity&lt;User&gt; userEntity = Entity.entity(inexistant, <span style="color: #008b8b;">MediaType</span>.APPLICATION_JSON);
+<span class="linenr">25: </span>     <span style="color: #228b22;">int</span> <span style="color: #a0522d;">notFound</span> = target(<span style="color: #8b2252;">"/users"</span>).path(<span style="color: #8b2252;">"jsteed"</span>).request().put(userEntity).getStatus();
+<span class="linenr">26: </span>     assertEquals(404, notFound);
+<span class="linenr">27: </span> }
+</pre>
+</div>
+
+<p>
+L'implémentation de la méthode dans la classe <code>UserRessource</code> est la suivante :
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span class="linenr"> 1: </span><span style="color: #8b2252;">/** </span>
+<span class="linenr"> 2: </span><span style="color: #8b2252;"> * M&#233;thode prenant en charge les requ&#234;tes HTTP DELETE sur /users{login}</span>
+<span class="linenr"> 3: </span><span style="color: #8b2252;"> *</span>
+<span class="linenr"> 4: </span><span style="color: #8b2252;"> * </span><span style="color: #008b8b;">@param</span><span style="color: #8b2252;"> login le login de l'utilisateur &#224; modifier</span>
+<span class="linenr"> 5: </span><span style="color: #8b2252;"> * </span><span style="color: #008b8b;">@param</span><span style="color: #8b2252;"> user l'entit&#233; correspondant &#224; la nouvelle instance</span>
+<span class="linenr"> 6: </span><span style="color: #8b2252;"> * </span><span style="color: #008b8b;">@return</span><span style="color: #8b2252;"> Un code de retour HTTP dans un objet Response</span>
+<span class="linenr"> 7: </span><span style="color: #8b2252;"> */</span>
+<span class="linenr"> 8: </span>@PUT
+<span class="linenr"> 9: </span>@Path(<span style="color: #8b2252;">"{login}"</span>)
+<span class="linenr">10: </span>    <span style="color: #a020f0;">public</span> Response modifyUser(@PathParam(<span style="color: #8b2252;">"login"</span>) String login, <span style="color: #228b22;">User</span> <span style="color: #a0522d;">user</span>) {
+<span class="linenr">11: </span>    <span style="color: #b22222;">// </span><span style="color: #b22222;">Si l'utilisateur est inconnu, on renvoie 404</span>
+<span class="linenr">12: </span>    <span style="color: #a020f0;">if</span> (  ! users.containsKey(user.getLogin()) ) {
+<span class="linenr">13: </span>        <span style="color: #a020f0;">throw</span> <span style="color: #a020f0;">new</span> <span style="color: #228b22;">NotFoundException</span>();
+<span class="linenr">14: </span>    }
+<span class="linenr">15: </span>    <span style="color: #a020f0;">else</span> {
+<span class="linenr">16: </span>        users.put(user.getLogin(), user);
+<span class="linenr">17: </span>        <span style="color: #a020f0;">return</span> Response.status(<span style="color: #008b8b;">Response</span>.<span style="color: #008b8b;">Status</span>.NO_CONTENT).build();
+<span class="linenr">18: </span>    }
+<span class="linenr">19: </span>}
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-2-3-4" class="outline-4">
+<h4 id="sec-2-3-4"><span class="section-number-4">2.3.4</span> Les méthodes HEAD et OPTIONS</h4>
+<div class="outline-text-4" id="text-2-3-4">
+<p>
+Vous pouvez si vous le souhaitez fournir une implémentation particulière de ces deux méthodes mais la spécification prévoie une prise en charge automatique.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-2-4" class="outline-3">
+<h3 id="sec-2-4"><span class="section-number-3">2.4</span> Jouons avec les types MIME</h3>
+<div class="outline-text-3" id="text-2-4">
+</div><div id="outline-container-sec-2-4-1" class="outline-4">
+<h4 id="sec-2-4-1"><span class="section-number-4">2.4.1</span> Le type application/x-www-form-urlencoded</h4>
+<div class="outline-text-4" id="text-2-4-1">
+<p>
+L'implémentation que nous avons réalisée pour l'instant transmet les informations concernant un utilisateur au format JSON. Si, par exemple un utilisateur est créé à partir d'un formulaire Web, le type MIME associé à la méthode POST sera <code>application/x-www-form-urlencoded</code>. <i>A priori</i>, ce format n'est pas pris en charge par notre implémentation de <code>UserResource</code>. Vérifions cela avec un test :
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span class="linenr"> 1: </span>@Test
+<span class="linenr"> 2: </span><span style="color: #a020f0;">public</span> <span style="color: #228b22;">void</span> test_K_CreateUserFromForm() {
+<span class="linenr"> 3: </span>    <span style="color: #228b22;">Form</span> <span style="color: #a0522d;">form</span> = <span style="color: #a020f0;">new</span> <span style="color: #228b22;">Form</span>();
+<span class="linenr"> 4: </span>    form.param(<span style="color: #8b2252;">"login"</span>, <span style="color: #8b2252;">"tking"</span>);
+<span class="linenr"> 5: </span>    form.param(<span style="color: #8b2252;">"name"</span>, <span style="color: #8b2252;">"King"</span>);
+<span class="linenr"> 6: </span>    form.param(<span style="color: #8b2252;">"mail"</span>, <span style="color: #8b2252;">"tking@mi5.uk"</span>);
+<span class="linenr"> 7: </span>
+<span class="linenr"> 8: </span>    Entity&lt;Form&gt; formEntity = Entity.entity(form, <span style="color: #008b8b;">MediaType</span>.APPLICATION_FORM_URLENCODED_TYPE);
+<span class="linenr"> 9: </span>    <span style="color: #228b22;">int</span> <span style="color: #a0522d;">code</span> = target(<span style="color: #8b2252;">"/users"</span>).request().post(formEntity).getStatus();
+<span class="linenr">10: </span>
+<span class="linenr">11: </span>    assertEquals(201, code);
+<span class="linenr">12: </span>}
+</pre>
+</div>
+
+<p>
+Le test échoue effectivement :
+</p>
+
+<pre class="example">
+petery@neuvilloise:~/Sandbox/REST/first-rest-app$ mvn test
+[INFO] Scanning for projects...
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building first-rest-app 1.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO]
+[...]
+Tests run: 11, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 2.628 sec &lt;&lt;&lt; FAILURE!
+
+Results :
+
+Failed tests:   test_K_CreateUserFromForm(fr.univ_lille.iut.UserResourceTest): expected:&lt;201&gt; but was:&lt;415&gt;
+
+Tests run: 11, Failures: 1, Errors: 0, Skipped: 0
+
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 4.697s
+[INFO] Finished at: Mon Feb 23 21:41:55 CET 2015
+[INFO] Final Memory: 17M/303M
+[INFO] ------------------------------------------------------------------------
+</pre>
+
+<p>
+Le code d'erreur retourné est <code>415 - Unsupported Media Type</code>, ce qui est logique. Pour plus d'information sur les codes des retour HTTP vous pouvez consulter cette <a href="http:www.restapitutorial.com/httpstatuscodes.html">page</a>.
+</p>
+
+<p>
+Ajoutons donc une méthode pour gérer ce nouveau format à notre ressource.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span class="linenr"> 1: </span><span style="color: #8b2252;">/**</span>
+<span class="linenr"> 2: </span><span style="color: #8b2252;"> * M&#233;thode de cr&#233;ation d'un utilisateur qui prend en charge les requ&#234;tes HTTP POST au format application/x-www-form-urlencoded</span>
+<span class="linenr"> 3: </span><span style="color: #8b2252;"> * La m&#233;thode renvoie l'URI de la nouvelle instance en cas de succ&#232;s</span>
+<span class="linenr"> 4: </span><span style="color: #8b2252;"> *</span>
+<span class="linenr"> 5: </span><span style="color: #8b2252;"> * </span><span style="color: #008b8b;">@param</span><span style="color: #8b2252;"> login login de l'utilisateur</span>
+<span class="linenr"> 6: </span><span style="color: #8b2252;"> * </span><span style="color: #008b8b;">@param</span><span style="color: #8b2252;"> name nom de l'utilisateur</span>
+<span class="linenr"> 7: </span><span style="color: #8b2252;"> * </span><span style="color: #008b8b;">@param</span><span style="color: #8b2252;"> mail le mail de l'utilisateur</span>
+<span class="linenr"> 8: </span><span style="color: #8b2252;"> * </span><span style="color: #008b8b;">@return</span><span style="color: #8b2252;"> Response le corps de la r&#233;ponse est vide, le code de retour HTTP est fix&#233; &#224; 201 si la cr&#233;ation est faite</span>
+<span class="linenr"> 9: </span><span style="color: #8b2252;"> *         L'en-t&#234;te contient un champs Location avec l'URI de la nouvelle ressource</span>
+<span class="linenr">10: </span><span style="color: #8b2252;"> */</span>
+<span class="linenr">11: </span>@POST
+<span class="linenr">12: </span>@Consumes(<span style="color: #8b2252;">"application/x-www-form-urlencoded"</span>)
+<span class="linenr">13: </span>    <span style="color: #a020f0;">public</span> Response createUser(@FormParam(<span style="color: #8b2252;">"login"</span>) String login, @FormParam(<span style="color: #8b2252;">"name"</span>) String name, @FormParam(<span style="color: #8b2252;">"mail"</span>) String mail) {
+<span class="linenr">14: </span>    <span style="color: #b22222;">// </span><span style="color: #b22222;">Si l'utilisateur existe d&#233;j&#224;, renvoyer 409</span>
+<span class="linenr">15: </span>    <span style="color: #a020f0;">if</span> ( users.containsKey(login) ) {
+<span class="linenr">16: </span>        <span style="color: #a020f0;">return</span> Response.status(<span style="color: #008b8b;">Response</span>.<span style="color: #008b8b;">Status</span>.CONFLICT).build();
+<span class="linenr">17: </span>    }
+<span class="linenr">18: </span>    <span style="color: #a020f0;">else</span> {
+<span class="linenr">19: </span>        users.put(login, <span style="color: #a020f0;">new</span> <span style="color: #228b22;">User</span>(login, name, mail));
+<span class="linenr">20: </span>
+<span class="linenr">21: </span>        <span style="color: #b22222;">// </span><span style="color: #b22222;">On renvoie 201 et l'instance de la ressource dans le Header HTTP 'Location'</span>
+<span class="linenr">22: </span>        <span style="color: #228b22;">URI</span> <span style="color: #a0522d;">instanceURI</span> = uriInfo.getAbsolutePathBuilder().path(login).build();
+<span class="linenr">23: </span>        <span style="color: #a020f0;">return</span> Response.created(instanceURI).build();
+<span class="linenr">24: </span>    }
+<span class="linenr">25: </span>}
+</pre>
+</div>
+
+<p>
+La création à partir d'un formulaire est désormais possible.
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-2-4-2" class="outline-4">
+<h4 id="sec-2-4-2"><span class="section-number-4">2.4.2</span> Et XML alors ?</h4>
+<div class="outline-text-4" id="text-2-4-2">
+<p>
+XML est un format courant qui doit pouvoir être supporté. Nous allons voir comment faire sur la méthode HTTP GET appliquée à <code>/users/{login}</code>. Tout d'abord, préparons le test qui permettra de vérifier que cela fonctionne :
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span class="linenr">1: </span><span style="color: #8b2252;">/**</span>
+<span class="linenr">2: </span><span style="color: #8b2252;"> * V&#233;rifie qu'on r&#233;cup&#232;re bien un utilisateur avec le type MIME application/xml</span>
+<span class="linenr">3: </span><span style="color: #8b2252;"> */</span>
+<span class="linenr">4: </span>@Test
+<span class="linenr">5: </span><span style="color: #a020f0;">public</span> <span style="color: #228b22;">void</span> test_L_GetUserAsXml() { 
+<span class="linenr">6: </span>    <span style="color: #228b22;">int</span> <span style="color: #a0522d;">code</span> = target(<span style="color: #8b2252;">"/users"</span>).path(<span style="color: #8b2252;">"tking"</span>).request(<span style="color: #008b8b;">MediaType</span>.APPLICATION_XML).get().getStatus();
+<span class="linenr">7: </span>    assertEquals(code, 200);
+<span class="linenr">8: </span>}
+</pre>
+</div>
+
+<p>
+Bien sûr le test échoue :
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src--n">petery@neuvilloise:~/Sandbox/REST/first-rest-app$ mvn clean test
+[INFO] Scanning for projects...
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building first-rest-app 1.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[...]
+INFOS: Creating JettyTestContainer configured at the base URI http://localhost:9998/
+2015-02-24 08:54:58.481:INFO:oejs.Server:main: jetty-9.1.1.v20140108
+2015-02-24 08:54:58.488:INFO:oejs.ServerConnector:main: Started ServerConnector@3cb3862e{HTTP/1.1}{0.0.0.0:9998}
+févr. 24, 2015 8:54:58 AM org.glassfish.jersey.message.internal.WriterInterceptorExecutor$TerminalWriterInterceptor aroundWriteTo
+<span id="coderef-erreur" class="coderef-off">GRAVE: MessageBodyWriter not found for media type={application/xml, q=1000}, type=class fr.univ_lille.iut.User, genericType=class fr.univ_lille.iut.User. (erreur)</span>
+2015-02-24 08:54:58.514:INFO:oejs.ServerConnector:main: Stopped ServerConnector@3cb3862e{HTTP/1.1}{0.0.0.0:9998}
+Tests run: 12, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 2.831 sec &lt;&lt;&lt; FAILURE!
+
+Results :
+
+Failed tests:   test_L_GetUserAsXml(fr.univ_lille.iut.UserResourceTest): expected:&lt;500&gt; but was:&lt;200&gt;
+
+Tests run: 12, Failures: 1, Errors: 0, Skipped: 0
+</pre>
+</div>
+
+<p>
+Si on s'intéresse au <a href="#coderef-erreur"class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-erreur');" onmouseout="CodeHighlightOff(this, 'coderef-erreur');">message d'erreur</a>, on s'aperçoit que Jersey ne trouve pas la classe <code>MessageBodyWriter</code> sachant gérer le type <code>application/xml</code>. Les classes qui implémentent les interfaces <a href="https:jersey.java.net/apidocs/2.16/jersey/javax/ws/rs/ext/MessageBodyWriter.html"><code>MessageBodyWriter</code></a> et <a href="https:jersey.java.net/apidocs/2.16/jersey/javax/ws/rs/ext/MessageBodyReader.html"><code>MessageBodyReader</code></a> servent à faire la conversion entre un type de donnée (XML, JSON&#x2026;) transporté dans la requête HTTP et les types Java. Un certain nombre de formats sont pris en charge nativement ou via un module intégré à Jersey (JSON par exemple).
+</p>
+
+<p>
+XML est un des types pris en charge nativement, nous allons maintenant voir comment faire pour qu'il soit pris en charge. Reprenons notre méthode getUser et précisons les types MIME acceptés :
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span class="linenr"> 1: </span><span style="color: #8b2252;">/** </span>
+<span class="linenr"> 2: </span><span style="color: #8b2252;">  * M&#233;thode prenant en charge les requ&#234;tes HTTP GET sur /users/{login}</span>
+<span class="linenr"> 3: </span><span style="color: #8b2252;">  *</span>
+<span class="linenr"> 4: </span><span style="color: #8b2252;">  * </span><span style="color: #008b8b;">@return</span><span style="color: #8b2252;"> Une instance de User</span>
+<span class="linenr"> 5: </span><span style="color: #8b2252;">  */</span>
+<span class="linenr"> 6: </span> @GET
+<span class="linenr"> 7: </span> @Path(<span style="color: #8b2252;">"{login}"</span>)
+<span id="coderef-produces" class="coderef-off"><span class="linenr"> 8: </span> @Produces(<span style="color: #8b2252;">"application/json,application/xml"</span>)</span>
+<span class="linenr"> 9: </span> <span style="color: #a020f0;">public</span> User getUser(@PathParam(<span style="color: #8b2252;">"login"</span>) String login) {
+<span class="linenr">10: </span>     <span style="color: #b22222;">// </span><span style="color: #b22222;">Si l'utilisateur est inconnu, on renvoie 404</span>
+<span class="linenr">11: </span>     <span style="color: #a020f0;">if</span> (  ! users.containsKey(login) ) {
+<span class="linenr">12: </span>         <span style="color: #a020f0;">throw</span> <span style="color: #a020f0;">new</span> <span style="color: #228b22;">NotFoundException</span>();
+<span class="linenr">13: </span>     }
+<span class="linenr">14: </span>     <span style="color: #a020f0;">else</span> {
+<span class="linenr">15: </span>         <span style="color: #a020f0;">return</span> users.get(login);
+<span class="linenr">16: </span>     }
+<span class="linenr">17: </span> }
+</pre>
+</div>
+
+<p>
+On a simplement rajouté l'annotation <a href="#coderef-produces"class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-produces');" onmouseout="CodeHighlightOff(this, 'coderef-produces');"><code>@Produces</code></a> qui précise les types MIME produits par la méthode. L'ordre des types indique la préférence. Ici <code>application/json</code> est le format préféré et il sera utilisé si le client ne précise rien sur ses attentes. Cela n'indique toujours pas à Jersey comment transformer une instance de la classe <code>User</code> en un fichier XML (et inversement). Il existe un standard Java pour ce type de conversion : JAXB ou <a href="http:docs.oracle.com/javase/tutorial/jaxb/intro/">Java Architecture for XML Binding</a>. Nous allons utiliser celui-ci de manière un peu magique sans rentrer dans les détails de JAXB. Pour cela, nous allons modifier la classe <code>User</code> :
+</p>
+
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span class="linenr">1: </span><span style="color: #a020f0;">import</span> <span style="color: #008b8b;">javax</span>.<span style="color: #008b8b;">xml</span>.<span style="color: #008b8b;">bind</span>.<span style="color: #008b8b;">annotation</span>.<span style="color: #228b22;">XmlRootElement</span>;
+<span class="linenr">2: </span>
+<span id="coderef-xmlroot" class="coderef-off"><span class="linenr">3: </span>@XmlRootElement</span>
+<span class="linenr">4: </span><span style="color: #a020f0;">public</span> <span style="color: #a020f0;">class</span> User {
+<span class="linenr">5: </span>  [...]
+<span class="linenr">6: </span>}
+</pre>
+</div>
+
+<p>
+C'est tout ? Et oui, l'annotation <a href="#coderef-xmlroot"class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-xmlroot');" onmouseout="CodeHighlightOff(this, 'coderef-xmlroot');"><code>@XmlRootElement</code></a> utilisée, marque cette classe pour la génération des classes de conversion XML &lt;-&gt; <code>User</code> par JAXB. Jersey va les utiliser pour générer les classes de type <code>MessageBodyWriter</code> et <code>MessageBodyReader</code>.
+</p>
+
+<p>
+Vérifions avec notre test:
+</p>
+
+<pre class="example">
+petery@neuvilloise:~/Sandbox/REST/first-rest-app$ mvn test
+[INFO] Scanning for projects...
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building first-rest-app 1.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[...]
+Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.829 sec
+
+Results :
+
+Tests run: 12, Failures: 0, Errors: 0, Skipped: 0
+
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 4.397s
+[INFO] Finished at: Tue Feb 24 09:39:48 CET 2015
+[INFO] Final Memory: 9M/240M
+[INFO] ------------------------------------------------------------------------
+</pre>
+
+<p>
+Pas convaincu ? Voici le résultat de la même requête réalisée avec RESTClient après un <code>mvn jetty:run</code>
+</p>
+
+
+<div class="figure">
+<p><img src="./RESTClient_GET_XML.png" alt="RESTClient_GET_XML.png" />
+</p>
+<p><span class="figure-number">Figure&nbsp;4&nbsp;:</span> Requête HTTP GET sur <code>/users/epeel</code> avec un type MIME application/xml</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Auteur: Yvan Peter</p>
+<p class="date">Created: 2015-02-24 mar. 10:04</p>
+<p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 23.4.1 (<a href="http://orgmode.org">Org</a> mode 8.2.5h)</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>
