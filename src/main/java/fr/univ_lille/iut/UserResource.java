@@ -10,6 +10,7 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
@@ -95,6 +96,26 @@ public class UserResource {
         }
         else {
             users.remove(login);
+            return Response.status(Response.Status.NO_CONTENT).build();
+        }
+    }
+
+    /** 
+     * Méthode prenant en charge les requêtes HTTP DELETE sur /users{login}
+     *
+     * @param login le login de l'utilisateur à modifier
+     * @param user l'entité correspondant à la nouvelle instance
+     * @return Un code de retour HTTP dans un objet Response
+     */
+    @PUT
+    @Path("{login}")
+        public Response modifyUser(@PathParam("login") String login, User user) {
+        // Si l'utilisateur est inconnu, on renvoie 404
+        if (  ! users.containsKey(user.getLogin()) ) {
+            throw new NotFoundException();
+        }
+        else {
+            users.put(user.getLogin(), user);
             return Response.status(Response.Status.NO_CONTENT).build();
         }
     }
