@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
@@ -82,6 +83,19 @@ public class UserResource {
         }
         else {
             return users.get(login);
+        }
+    }
+
+    @DELETE
+    @Path("{login}")
+    public Response deleteUser(@PathParam("login") String login) {
+        // Si l'utilisateur est inconnu, on renvoie 404
+        if (  ! users.containsKey(login) ) {
+            throw new NotFoundException();
+        }
+        else {
+            users.remove(login);
+            return Response.status(Response.Status.NO_CONTENT).build();
         }
     }
 }
