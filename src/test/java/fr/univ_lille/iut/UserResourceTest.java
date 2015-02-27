@@ -3,12 +3,12 @@ package fr.univ_lille.iut;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
 import java.net.URI;
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Form;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -146,15 +146,37 @@ public class UserResourceTest extends JerseyTest {
         assertEquals(modified, retrieved);
     }
     
-     /**
-      *
-      * Vérifie que la suppression d'un utilisateur inexistant renvoie 404
-      */
-     @Test
-     public void test_J_ModifyInexistantUser() {
-        User inexistant = new User("jsteed", "Steed", "jsteed@mi5.uk");
-        Entity<User> userEntity = Entity.entity(inexistant, MediaType.APPLICATION_JSON);
-         int notFound = target("/users").path("jsteed").request().put(userEntity).getStatus();
-         assertEquals(404, notFound);
-     }
+    /**
+     *
+     * Vérifie que la suppression d'un utilisateur inexistant renvoie 404
+     */
+    @Test
+    public void test_J_ModifyInexistantUser() {
+       User inexistant = new User("jsteed", "Steed", "jsteed@mi5.uk");
+       Entity<User> userEntity = Entity.entity(inexistant, MediaType.APPLICATION_JSON);
+        int notFound = target("/users").path("jsteed").request().put(userEntity).getStatus();
+        assertEquals(404, notFound);
+    }
+
+    @Test
+    public void test_K_CreateUserFromForm() {
+        Form form = new Form();
+        form.param("login", "tking");
+        form.param("name", "King");
+        form.param("mail", "tking@mi5.uk");
+    
+        Entity<Form> formEntity = Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE);
+        int code = target("/users").request().post(formEntity).getStatus();
+    
+        assertEquals(201, code);
+    }
+
+    /**
+     * Vérifie qu'on récupère bien un utilisateur avec le type MIME application/xml
+     */
+    @Test
+    public void test_L_GetUserAsXml() { 
+        int code = target("/users").path("tking").request(MediaType.APPLICATION_XML).get().getStatus();
+        assertEquals(code, 200);
+    }
 }

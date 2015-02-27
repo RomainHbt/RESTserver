@@ -6,13 +6,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -117,6 +120,50 @@ public class UserResource {
         else {
             users.put(user.getLogin(), user);
             return Response.status(Response.Status.NO_CONTENT).build();
+        }
+    }
+
+    /**
+     * Méthode de création d'un utilisateur qui prend en charge les requêtes HTTP POST au format application/x-www-form-urlencoded
+     * La méthode renvoie l'URI de la nouvelle instance en cas de succès
+     *
+     * @param login login de l'utilisateur
+     * @param name nom de l'utilisateur
+     * @param mail le mail de l'utilisateur
+     * @return Response le corps de la réponse est vide, le code de retour HTTP est fixé à 201 si la création est faite
+     *         L'en-tête contient un champs Location avec l'URI de la nouvelle ressource
+     */
+    @POST
+    @Consumes("application/x-www-form-urlencoded")
+    public Response createUser(@FormParam("login") String login, @FormParam("name") String name, @FormParam("mail") String mail) {
+        // Si l'utilisateur existe déjà, renvoyer 409
+        if ( users.containsKey(login) ) {
+            return Response.status(Response.Status.CONFLICT).build();
+        }
+        else {
+            users.put(login, new User(login, name, mail));
+
+            // On renvoie 201 et l'instance de la ressource dans le Header HTTP 'Location'
+            URI instanceURI = uriInfo.getAbsolutePathBuilder().path(login).build();
+            return Response.created(instanceURI).build();
+        }
+    }
+
+    /** 
+     * Méthode prenant en charge les requêtes HTTP GET sur /users/{login}
+     *
+     * @return Une instance de User
+     */
+    @GET
+    @Path("{login}")
+    @Produces("application/json,application/xml")
+    public User getUser(@PathParam("login") String login) {
+        // Si l'utilisateur est inconnu, on renvoie 404
+        if (  ! users.containsKey(login) ) {
+            throw new NotFoundException();
+        }
+        else {
+            return users.get(login);
         }
     }
 }
